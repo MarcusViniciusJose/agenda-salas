@@ -1,0 +1,20 @@
+CREATE DATABASE agendamento;
+
+USE agndamento;
+
+CREATE TABLE users(
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	name VARCHAR(100),
+	email VARCHAR(100) UNIQUE,
+	password VARCHAR(100)
+);
+
+CREATE TABLE events(
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	title VARCHAR(255),
+	start DATETIME,
+	end DATETIME,
+	sala ENUM('reuniao', 'treinamento'),
+	created_by INT,
+	FOREIGN KEY(created_by) REFERENCES users(id)
+);
