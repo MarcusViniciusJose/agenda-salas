@@ -43,13 +43,15 @@
     </div>
 
     <script>
+
+
     document.addEventListener('DOMContentLoaded', function() {
         let calendarEl = document.getElementById('calendar');
 
         let calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             locale: 'pt-br',
-            events: '/event/all',
+            events: '../event/all',
             eventDidMount: function(info) {
                 if (info.event.extendedProps.sala === 'reuniao') {
                     info.el.style.backgroundColor = '#28a745';
@@ -70,7 +72,7 @@
         document.getElementById('eventForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            fetch('/event/store', {
+            fetch('../event/store', {
                 method: 'POST',
                 body: new FormData(this)
             })

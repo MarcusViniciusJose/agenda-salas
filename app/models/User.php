@@ -1,5 +1,6 @@
 <?php
-require_once 'app/config/database.php';
+
+require_once __DIR__ . '/../config/database.php';
 
     class User{
         private $conn;
@@ -10,16 +11,16 @@ require_once 'app/config/database.php';
             
         }
 
-        public function login($email, $password){
-            $query = "SELECT * FROM users WHERE email = :email LIMIT 1";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(":email", $email);
-            $stmt->execute();
+        public function login($email, $password) {
+            $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = :email");
+            $stmt->execute([':email' => $email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if($user && password_verify($password, $user['password'])){
+        
+            if ($user && password_verify($password, $user['password'])) {
+                unset($user['password']); 
                 return $user;
             }
+        
             return false;
         }
     }

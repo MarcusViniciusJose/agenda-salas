@@ -4,7 +4,7 @@
         private $db_name = "agendamento";
         private $username = "root";
         private $password = "";
-        private $conn;
+        public $conn;
 
         public function connect(){
             $this->conn = null;
@@ -13,7 +13,7 @@
                     "mysql:host=" . $this->host . ";dbname=" . $this->db_name,
                     $this->username, $this->password
                 );
-                $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ATTR_ERRMODE);
+                $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             } catch(PDOException $e){
                 echo "Erro de conexão: " . $e->getMessage();
             }

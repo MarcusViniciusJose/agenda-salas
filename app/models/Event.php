@@ -1,23 +1,18 @@
 <?php
 
-require_once 'app/config/database.php';
+require_once __DIR__ . '/../config/Database.php';
 
+class Event {
+    private $conn;
 
-Class Event{
-private $conn;
-
-    public function _construct(){
-        $db = new DataBase();
-        $this->conn = $db->connect();
-        
+    public function __construct() {
+        $this->conn = (new Database())->connect();
     }
 
-    public function getAll(){
-        $query = "SELECT * FROM events";
-        $stmt = $this->conn->prepare(query);
-        stmt->execute();
+    public function getAll() {
+        $stmt = $this->conn->prepare("SELECT * FROM events");
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     }
 
     public function create($title, $start, $end, $sala, $created_by){

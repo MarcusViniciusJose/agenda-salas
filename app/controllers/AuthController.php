@@ -1,9 +1,9 @@
 <?php
-require_once 'app/models/User.php';
+require_once __DIR__ . '/../models/User.php';
 
 class AuthController{
     public function loginForm(){
-        require 'app/views/auth/login.php';
+        require __DIR__ . '/../views/auth/login.php';
 
     }
 
@@ -16,9 +16,9 @@ class AuthController{
         if($user){
             session_start();
             $_SESSION['user'] = $user;
-            header("Location: /dashboard");
+            header("Location: ../event/index");
         }else{
-            echo "Login inválido";
+            echo "<pre>Login inválido.<br>Email: $email<br>Senha: $password</pre>";
         }
     }
     
