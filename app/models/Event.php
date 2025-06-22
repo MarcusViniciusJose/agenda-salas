@@ -26,4 +26,11 @@ class Event {
             ':sala' => $sala,
             ':created_by' => $created_by]);
     }
+
+    public function addParticipants($event_id, $participants){
+        $stmt = $this->conn->prepare("INSERT INTO events_participants (event_id, user_id) VALUES (?, ?)");
+        foreach($participants as $user_id){
+            $stmt->execute([$event_id, $user_id]);
+        }
+    }
 }

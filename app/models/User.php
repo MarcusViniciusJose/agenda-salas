@@ -23,4 +23,10 @@ require_once __DIR__ . '/../config/database.php';
         
             return false;
         }
+
+        public function getAll(){
+            $stmt = $this->conn->prepare('SELECT * FROM users');
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
     }

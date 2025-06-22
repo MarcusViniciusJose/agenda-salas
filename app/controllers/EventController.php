@@ -1,6 +1,8 @@
 <?php
 
 require_once __DIR__ . '/../models/Event.php';
+require_once __DIR__ . '/../config/mail.php';
+require_once __DIR__ . '/../models/User.php';
 
 class EventController{
     public function index(){
@@ -11,6 +13,26 @@ class EventController{
         $event = new Event();
         $events = $event->getAll();
         echo json_encode($events);
+    }
+
+    
+    public function sendEmailToUser($user_id, $title, $start, $end, $sala){
+        $userModel = new User();
+        $users = $userModel->getAll();
+
+        foreach($users as $u){
+            if($u['id'] == $user_id){
+                $to = $u['email'];
+                $subject = "Novo evento: $title";
+                $body = "<p>Você foi convidado para o evento <strong>$title</strong>.</p>
+                        <p><b>Data:</b> $start até $end<br><b>Sala: </b> $sala</p>";
+                sendEmail($to, $subject, $body);
+                break;
+            }
+
+        }
+
+        
     }
 
     public function store() {
@@ -29,7 +51,18 @@ class EventController{
         $sala = $_POST['sala'];
         $created_by = $_SESSION['user']['id'];
     
-        $event->create($title, $start, $end, $sala, $created_by);
+        $event_id = $event->create($title, $start, $end, $sala, $created_by);
+        $participants = $_POST['participants'] ?? [];
+
+        if(!empty($participants)){
+            $event->addParticipants($event_id, $participants);
+        }
+    
+        foreach($participants as $user_id){
+            $this->sendEmailToUser($user_id, $title, $start, $end, $sala);
+        }
         echo json_encode(['success' => true]);
     }
+
+    
 } 
