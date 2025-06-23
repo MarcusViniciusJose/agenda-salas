@@ -25,7 +25,8 @@ require_once __DIR__ . '/../config/database.php';
         }
 
         public function getAll(){
-            $stmt = $this->conn->prepare('SELECT * FROM users');
+            $stmt = $this->conn->prepare('SELECT * FROM users WHERE id = :id');
+            $stmt->bindParam(':id', $id);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
