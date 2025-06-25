@@ -75,14 +75,14 @@
     const sala = document.getElementById('sala');
     const participants = document.getElementById('participants');
 
-    // Inicializar Select2 com busca AJAX
+    
     $('#participants').select2({
       placeholder: 'Buscar participantes...',
       ajax: {
         url: '../user/search',
         dataType: 'json',
         delay: 250,
-        data: params => ({ search: params.term }),
+        data: params => ({ term: params.term }),
         processResults: data => ({
           results: data.map(user => ({ id: user.id, text: user.nome + ' (' + user.email + ')' }))
         }),

@@ -30,4 +30,12 @@ require_once __DIR__ . '/../config/database.php';
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
+
+        public function searchByNameOrEmail(){
+            $stmt = $this->conn->prepare("SELECT id, nome, email FROM users WHERE nome LIKE :term OR email LIKE :term LIMIT 10");
+            $like = '%' . term . '%';
+            $stmt->bindParam(':term', $like);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC); 
+        }
     }
