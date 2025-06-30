@@ -31,11 +31,17 @@ require_once __DIR__ . '/../config/database.php';
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        public function searchByNameOrEmail(){
+        public function searchByNameOrEmail($term){
             $stmt = $this->conn->prepare("SELECT id, nome, email FROM users WHERE nome LIKE :term OR email LIKE :term LIMIT 10");
-            $like = '%' . term . '%';
+            $like = '%' . $term . '%';
             $stmt->bindParam(':term', $like);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC); 
+        }
+
+        public function getById($id) {
+            $stmt = $this->conn->prepare("SELECT id, nome, email FROM users WHERE id = ?");
+            $stmt->execute([$id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
         }
     }

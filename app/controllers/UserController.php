@@ -4,7 +4,7 @@ require_once __DIR__ . '/../models/User.php';
 class UserController{
 
     public function search(){
-        if(!asset($_GET['term'])){
+        if(!isset($_GET['term'])){
             echo json_encode([]);
             return;
         }
@@ -12,9 +12,9 @@ class UserController{
         $userModel = new User();
         $results = $userModel->searchByNameOrEmail($term);
 
-        $formatted = array_map(function($user)){
+        $formatted = array_map(function($user) {
             return[
-                'id' => $user['id'];
+                'id' => $user['id'],
                 'text' => $user['nome'] . ' (' . $user['email'] . ')'
             ];
         }, $results);
