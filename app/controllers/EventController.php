@@ -1,10 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/Event.php';
 require_once __DIR__ . '/../models/User.php';
-require_once __DIR__ . '/../../vendor/autoload.php';
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+require_once __DIR__ . '/../models/Notification.php';
 
 class EventController {
     public function index() {
@@ -19,56 +16,37 @@ class EventController {
 
     public function store() {
         session_start();
+
         $event = new Event();
         $userModel = new User(); 
-    
+        $notificationModel = new Notification();
+
         $title = $_POST['title'];
         $start = $_POST['start'];
         $end = $_POST['end'];
         $sala = $_POST['sala'];
         $created_by = $_SESSION['user']['id'] ?? null;
         $participants = $_POST['participants'] ?? [];
-    
+
         if (!$created_by) {
             echo json_encode(['success' => false, 'error' => 'Usuário não autenticado.']);
             return;
         }
-    
-        
+
         $eventId = $event->create($title, $start, $end, $sala, $created_by);
-    
-        
+
         if ($eventId && count($participants) > 0) {
             foreach ($participants as $userId) {
-                $event->addParticipants($eventId, $userId); 
-    
-                $user = $userModel->getById($userId);
-                if ($user) {
-                    try {
-                        $mail = new PHPMailer(true);
-                        $mail->isSMTP();
-                        $mail->Host = 'smtp.gmail.com';
-                        $mail->SMTPAuth = true;
-                        $mail->Username = 'seuemail@gmail.com'; 
-                        $mail->Password = 'sua_senha_de_app';   
-                        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                        $mail->Port = 587;
-    
-                        $mail->setFrom('seuemail@gmail.com', 'Agenda de Salas');
-                        $mail->addAddress($user['email'], $user['nome']);
-    
-                        $mail->isHTML(true);
-                        $mail->Subject = 'Você foi convidado para um evento';
-                        $mail->Body = "Olá {$user['nome']},<br>Você foi convidado para o evento <strong>$title</strong> no dia <strong>$start</strong>.";
-    
-                        $mail->send();
-                    } catch (Exception $e) {
-                        error_log("Erro ao enviar e-mail: {$mail->ErrorInfo}");
-                    }
-                }
+                $event->addParticipants($eventId, $userId);
+
+                // Criação de notificação
+                $notificationModel->create(
+                    $userId,
+                    "Você foi convidado para o evento <strong>$title</strong> no dia <strong>$start</strong>."
+                );
             }
         }
-    
+
         echo json_encode(['success' => true]);
     }
-}    
+}

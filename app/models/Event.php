@@ -19,12 +19,14 @@ class Event {
         $query = "INSERT INTO events (title, start, end, sala, created_by)
                   VALUES (:title, :start, :end, :sala, :created_by)";
         $stmt = $this->conn->prepare($query);
-        return $stmt->execute([
+        $stmt->execute([
             ':title' => $title,
             ':start' => $start,
             ':end' => $end,
             ':sala' => $sala,
-            ':created_by' => $created_by]);
+            ':created_by' => $created_by
+        ]);
+        return $this->conn->lastInsertId(); 
     }
 
     public function addParticipants($eventId, $userId) {

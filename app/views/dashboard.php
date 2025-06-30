@@ -82,9 +82,9 @@
         url: '../user/search',
         dataType: 'json',
         delay: 250,
-        data: params => ({ term: params.term }),
+        data: params => ({ search: params.term }),
         processResults: data => ({
-          results: data.map(user => ({ id: user.id, text: user.nome + ' (' + user.email + ')' }))
+          results: data
         }),
         cache: true
       }

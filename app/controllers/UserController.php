@@ -3,22 +3,25 @@ require_once __DIR__ . '/../models/User.php';
 
 class UserController{
 
-    public function search(){
-        if(!isset($_GET['term'])){
+    public function search() {
+        $search = $_GET['search'] ?? ''; 
+    
+        if (empty($search)) {
             echo json_encode([]);
             return;
         }
-        $term = $_GET['term'];
+    
         $userModel = new User();
-        $results = $userModel->searchByNameOrEmail($term);
-
+        $results = $userModel->searchByNameOrEmail($search);
+    
         $formatted = array_map(function($user) {
-            return[
+            return [
                 'id' => $user['id'],
                 'text' => $user['nome'] . ' (' . $user['email'] . ')'
             ];
         }, $results);
-
+    
         echo json_encode($formatted);
     }
+    
 }

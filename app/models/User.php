@@ -40,8 +40,9 @@ require_once __DIR__ . '/../config/database.php';
         }
 
         public function getById($id) {
-            $stmt = $this->conn->prepare("SELECT id, nome, email FROM users WHERE id = ?");
-            $stmt->execute([$id]);
+            $stmt = $this->conn->prepare("SELECT * FROM events WHERE id = :id");
+            $stmt->bindParam(':id', $id);
+            $stmt->execute();
             return $stmt->fetch(PDO::FETCH_ASSOC);
         }
     }
