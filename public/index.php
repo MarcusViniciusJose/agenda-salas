@@ -7,7 +7,7 @@ $url = isset($_GET['url']) ? explode('/', $_GET['url']) : ['auth', 'loginForm'];
 require_once '../app/controllers/AuthController.php';
 require_once '../app/controllers/EventController.php';
 require_once '../app/controllers/UserController.php';
-require_once '../app/controllers/NotificationController.php'; // ✅ Adicione esta linha
+require_once '../app/controllers/NotificationController.php'; 
 
 $controllerName = ucfirst($url[0]) . 'Controller';
 $method = $url[1] ?? 'index';

@@ -17,10 +17,21 @@
   </style>
 </head>
 <body>
-<div class="container">
-  <h2 class="mt-4">Agendamento de Salas</h2>
-  <div id="calendar"></div>
-</div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <span class="navbar-brand">Agenda de Salas</span>
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" id="notif-icon">
+          🔔 <span class="badge bg-danger" id="notif-count">0</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" id="notif-list">
+          <li><span class="dropdown-item">Sem notificações</span></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
 
 <!-- Modal de Criação -->
 <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
@@ -126,6 +137,30 @@
         .catch(err => console.error(err));
     });
   });
+
+  function fetchNotifications() {
+  axios.get('../notification/get')
+    .then(res => {
+      const notifList = document.getElementById('notif-list');
+      const notifCount = document.getElementById('notif-count');
+      notifList.innerHTML = '';
+
+      if (res.data.length === 0) {
+        notifList.innerHTML = '<li><span class="dropdown-item">Sem notificações</span></li>';
+        notifCount.textContent = '0';
+      } else {
+        notifCount.textContent = res.data.length;
+        res.data.forEach(n => {
+          const li = document.createElement('li');
+          li.innerHTML = `<a class="dropdown-item" href="${n.link || '#'}">${n.message}</a>`;
+          notifList.appendChild(li);
+        });
+      }
+    });
+}
+
+setInterval(fetchNotifications, 10000); 
+fetchNotifications(); 
 </script>
 </body>
 </html>

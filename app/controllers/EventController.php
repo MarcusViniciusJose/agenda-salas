@@ -39,10 +39,10 @@ class EventController {
             foreach ($participants as $userId) {
                 $event->addParticipants($eventId, $userId);
 
-                // Criação de notificação
                 $notificationModel->create(
                     $userId,
-                    "Você foi convidado para o evento <strong>$title</strong> no dia <strong>$start</strong>."
+                    "Você foi convidado para o evento <strong>$titleSafe</strong> no dia <strong>$startSafe</strong>.",
+                    "/event/show/$eventId"
                 );
             }
         }
