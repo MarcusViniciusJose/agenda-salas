@@ -44,8 +44,8 @@ class Event {
     }
 
     public function getParticipants($eventId){
-        $stmt = $this->prepare("SELECT u.nome, u.email FROM event_participants ep JOIN users u ON ep.user_id = u.id WHERE ep.event_id = ?");
-
+        $stmt = $this->prepare("SELECT u.nome, u.email FROM users u INNER JOIN event_participants ep ON
+         u.id = ep.user_id WHERE ep.event_id = :event_id");
         $stmt->execute([$eventId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }

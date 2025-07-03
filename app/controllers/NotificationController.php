@@ -25,7 +25,7 @@ class NotificationController{
 
     public function markAndRedirect(){
         $id = $_GET['id'] ?? null;
-        $link = $_GET['link'] ?? '../event/index';
+        $link = $_GET['link'] ?? '../event/show?id=123';
 
         if($id){
             $model = new Notification();

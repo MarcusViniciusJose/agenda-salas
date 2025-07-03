@@ -58,7 +58,9 @@ class EventController {
             return;
         }
 
+        $eventId = $_GET['id'];
         $event = new Event();
+        $user = new User();
         $eventData = $event->getById($eventId);
         $participants = $event->getParticipants($eventId);
 
