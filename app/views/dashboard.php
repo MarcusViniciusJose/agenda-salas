@@ -152,7 +152,7 @@
         notifCount.textContent = res.data.length;
         res.data.forEach(n => {
           const li = document.createElement('li');
-          li.innerHTML = `<a class="dropdown-item" href="${n.link || '#'}">${n.message}</a>`;
+          li.innerHTML = `<a class="dropdown-item" href="../notification/markAndRedirect?id=${n.id}&link=${encodeURIComponent(n.link || '../event/index')}">${n.message}</a>`;
           notifList.appendChild(li);
         });
       }

@@ -2,18 +2,17 @@
 require_once __DIR__ . '/../models/Notification.php';
 
 class NotificationController{
-    public function get(){
+    public function get() {
         session_start();
         $user_id = $_SESSION['user']['id'] ?? null;
-
-        if(!$user_id){
+        if (!$user_id) {
             echo json_encode([]);
             return;
         }
-
+    
         $model = new Notification();
-        $notifications = $model->getUnreadByUser($user_id);
-        echo json_encode($notifications);
+        $data = $model->getUnreadByUser($user_id);
+        echo json_encode($data);
     }
 
     public function read(){
@@ -22,5 +21,33 @@ class NotificationController{
             $model  = new Notification();
             $model->markAsRead($id);
         }
+    }
+
+    public function markAndRedirect(){
+        $id = $_GET['id'] ?? null;
+        $link = $_GET['link'] ?? '../event/index';
+
+        if($id){
+            $model = new Notification();
+            $model->markAsRead($id);
+
+        }
+        header("Location: $link");
+        exit;
+    }
+
+    public function count(){
+        session_start();
+        $user_id = $_SESSION['user']['id'] ?? null;
+
+
+        if($user_id){
+            echo json_encode(['unread' => 0, 'total' => 0]);
+            return;
+        }
+
+        $model = new Notification();
+        $data = $model->countByUser($user_id);
+        echo json_encode($data);
     }
 }

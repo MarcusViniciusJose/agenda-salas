@@ -49,4 +49,19 @@ class EventController {
 
         echo json_encode(['success' => true]);
     }
+
+    public function show(){
+        $eventId = $_GET['id'] ?? null;
+
+        if(!eventId){
+            echo "Evento não encontrado";
+            return;
+        }
+
+        $event = new Event();
+        $eventData = $event->getById($eventId);
+        $participants = $event->getParticipants($eventId);
+
+        require '../app/views/event/show.php';
+    }
 }

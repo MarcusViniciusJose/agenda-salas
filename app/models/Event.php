@@ -36,4 +36,17 @@ class Event {
         $stmt->bindParam(':user_id', $userId);
         return $stmt->execute();
     }
+
+    public function getById($id){
+        $stmt = $this->conn->prepare("SELECT * FROM events WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getParticipants($eventId){
+        $stmt = $this->prepare("SELECT u.nome, u.email FROM event_participants ep JOIN users u ON ep.user_id = u.id WHERE ep.event_id = ?");
+
+        $stmt->execute([$eventId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }

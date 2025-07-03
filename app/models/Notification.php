@@ -26,4 +26,13 @@ class Notification{
         return $stmt->execute([$id]);
         
     }
+
+    public function countByUser($user_id){
+        $stmt = $this->conn->prepare("SELECT SUM(CASE WHEN is_read = 0 THEN 1 ELSE 0 END) AS unread, 
+        COUNT(*) AS total
+        FROM notifications WHERE user_id = ?");
+
+        $stmt->execute([$user_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
