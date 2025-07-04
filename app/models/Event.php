@@ -74,4 +74,15 @@ class Event {
 
         $this->conn->prepare("DELETE FROM event_participants WHERE event_id = :id")->execute([':id' => $id]);
     }
+
+    public function hasConflict($start, $end, $sala){
+        $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM events WHERE sala = :sala AND((start < :end AND end > start))");
+        $stmt->execute([
+            ':sala' => $sala,
+            ':start' => $start,
+            ':end' => $end
+        ]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] > 0;
+    }
 }

@@ -41,7 +41,7 @@
 <!-- Modal de Criação -->
 <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
   <div class="modal-dialog">
-    <form id="eventForm" class="modal-content p-3">
+    <form id="eventForm" class="modal-content p-3 rounded-3 shadow-sm border-0">
       <div class="modal-header">
         <h5 class="modal-title" id="eventModalLabel">Novo Evento</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
@@ -117,34 +117,38 @@
         eventModal.show();
       },
       eventClick: function(info) {
-        const event = info.event;
-        axios.get(`../event/getByIdAjax?id=${event.id}`)
-          .then(res => {
-            const data = res.data;
-            document.getElementById('event_id').value = event.id;
-            document.getElementById('title').value = data.event.title;
-            document.getElementById('start').value = data.event.start.replace(' ', 'T');
-            document.getElementById('end').value = data.event.end.replace(' ', 'T');
-            document.getElementById('sala').value = data.event.sala;
+      const event = info.event;
+      axios.get(`../event/getByIdAjax?id=${event.id}`)
+        .then(res => {
+          const data = res.data;
 
-            const participantsSelect = $('#participants');
-            participantsSelect.val(null).trigger('change');
-            data.participants.forEach(id => {
-              const option = new Option('Participante', id, true, true);
-              participantsSelect.append(option);
-            });
-            participantsSelect.trigger('change');
+      document.getElementById('event_id').value = event.id;
+      document.getElementById('title').value = data.event.title;
+      document.getElementById('start').value = data.event.start.replace(' ', 'T');
+      document.getElementById('end').value = data.event.end.replace(' ', 'T');
+      document.getElementById('sala').value = data.event.sala;
 
-            // Mostrar botão de exclusão se for criador
-            if (data.event.created_by == loggedUserId) {
-              document.getElementById('deleteEventBtn').style.display = 'inline-block';
-            } else {
-              document.getElementById('deleteEventBtn').style.display = 'none';
-            }
+      const participantsSelect = $('#participants');
+      participantsSelect.val(null).trigger('change');
 
-            eventModal.show();
-          });
+      data.participants.forEach(id => {
+        const option = new Option('Carregando...', id, true, true);
+        participantsSelect.append(option);
+      });
+
+      participantsSelect.trigger('change');
+
+      const loggedUserId = <?= $_SESSION['user']['id'] ?>;
+      if (data.event.created_by == loggedUserId) {
+        document.getElementById('deleteEventBtn').style.display = 'inline-block';
+      } else {
+        document.getElementById('deleteEventBtn').style.display = 'none';
       }
+
+      eventModal.show();
+    });
+}
+
     });
 
     calendar.render();
@@ -163,9 +167,12 @@
           }
         })
         .catch(err => {
-          console.error(err);
+        if (err.response?.data?.error) {
+          alert(err.response.data.error);
+        } else {
           alert('Erro ao salvar evento');
-        });
+        }
+      });
     });
 
     document.getElementById('deleteEventBtn').addEventListener('click', function () {
