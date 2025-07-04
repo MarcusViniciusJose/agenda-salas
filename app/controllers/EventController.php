@@ -33,7 +33,14 @@ class EventController {
             return;
         }
 
-        $eventId = $event->create($title, $start, $end, $sala, $created_by);
+        $eventId = $_POST['event_id'];
+
+        if($eventId){
+            $event->update($eventId, $title, $start, $end, $sala);
+            $event->removeParticipants($eventId);
+        }else{
+            $eventId = $event->create($title, $start, $end, $sala, $created_by);
+        }
 
         if ($eventId && count($participants) > 0) {
             foreach ($participants as $userId) {
@@ -65,5 +72,45 @@ class EventController {
         $participants = $event->getParticipants($eventId);
 
         require '../app/views/event/show.php';
+    }
+
+    public function getByIdAjax(){
+        if(!assert($_GET['id'])){
+            echo json_encode(['error' => 'ID não informado'])
+            return;
+        }
+
+        $event = new Event();
+        $eventData = $event->getById($_GET['id']);
+        $participants = $event->getParticipants($_GET['id']);
+        $participantsIds = array_column($participants, 'id');
+
+        echo json_encode([
+            'event' => $event;
+            'participants' => $participantsIds;
+        ])
+    }
+
+    public function delete(){
+        session_start();
+
+        $eventId = $_POST['id'] ?? null;
+        $userId = $_SESSION['user']['id'] ?? null;
+
+        if(!$eventId || !$userId){
+            echo json_encode(['success' => false, 'error' => 'ID ou usuário ausente']);
+            return;
+        }
+
+        $event = new Event()
+        $eventData = $event->getById($eventId);
+
+        if(!$eventData || $eventData['created_by'] != $userId){
+            echo json_encode(['success' => false, 'error' => 'Você não tem permissão para excluir este evento']);
+            return;
+        }
+
+        $event->delete($eventId);
+        echo json_encode(['success' => true]);
     }
 }

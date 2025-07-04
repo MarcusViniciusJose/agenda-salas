@@ -49,4 +49,29 @@ class Event {
         $stmt->execute([$eventId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function update($id, $title, $start, $end, $sala){
+        $stmt = $this->conn->prepare("UPDATE events SET 
+        title = :title, start = :start, end = :end, sala = :sala WHERE id = :id");
+
+        return $stmt->execute([
+            ':title' = $title,
+            ':start' = $start,
+            ':end' = $end,
+            ':sala' = $sala,
+            ':id' = $id
+        ]);
+    }
+
+    public function removeParticipants($eventId){
+        $stmt = $this->conn->prepare("DELETE FROM events_participants WHERE event_id = :event_id");
+        $stmt->execute([':event_id' = $eventId]);
+    }
+
+    public function delete($id){
+        $stmt = $this->conn->prepare("DELETE FROM events WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+
+        $this->conn->prepare("DELETE FROM event_participants WHERE event_id = :id")->execute([':id' => $id]);
+    }
 }

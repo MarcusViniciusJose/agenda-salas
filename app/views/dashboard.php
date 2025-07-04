@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -33,10 +34,14 @@
   </div>
 </nav>
 
+<div class="container mt-4">
+  <div id="calendar"></div>
+</div>
+
 <!-- Modal de Criação -->
 <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
   <div class="modal-dialog">
-    <form id="eventForm" class="modal-content">
+    <form id="eventForm" class="modal-content p-3">
       <div class="modal-header">
         <h5 class="modal-title" id="eventModalLabel">Novo Evento</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
@@ -69,24 +74,22 @@
       </div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary">Salvar</button>
+        <button type="button" class="btn btn-danger me-auto" id="deleteEventBtn" style="display: none;">
+          Excluir Evento
+        </button>
       </div>
     </form>
   </div>
 </div>
 
-
 <script>
+  const loggedUserId = <?= $_SESSION['user']['id'] ?? 'null' ?>;
+
   document.addEventListener('DOMContentLoaded', function () {
     const calendarEl = document.getElementById('calendar');
     const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
     const form = document.getElementById('eventForm');
-    const title = document.getElementById('title');
-    const start = document.getElementById('start');
-    const end = document.getElementById('end');
-    const sala = document.getElementById('sala');
-    const participants = document.getElementById('participants');
 
-    
     $('#participants').select2({
       placeholder: 'Buscar participantes...',
       ajax: {
@@ -94,9 +97,7 @@
         dataType: 'json',
         delay: 250,
         data: params => ({ search: params.term }),
-        processResults: data => ({
-          results: data
-        }),
+        processResults: data => ({ results: data }),
         cache: true
       }
     });
@@ -109,13 +110,40 @@
       select: function (info) {
         form.reset();
         $('#participants').val(null).trigger('change');
-        start.value = info.startStr + 'T08:00';
-        end.value = info.startStr + 'T09:00';
+        document.getElementById('event_id').value = '';
+        document.getElementById('start').value = info.startStr + 'T08:00';
+        document.getElementById('end').value = info.startStr + 'T09:00';
+        document.getElementById('deleteEventBtn').style.display = 'none';
         eventModal.show();
       },
       eventClick: function(info) {
         const event = info.event;
-        alert(`Evento: ${event.title}\nInício: ${event.start}\nFim: ${event.end}`);
+        axios.get(`../event/getByIdAjax?id=${event.id}`)
+          .then(res => {
+            const data = res.data;
+            document.getElementById('event_id').value = event.id;
+            document.getElementById('title').value = data.event.title;
+            document.getElementById('start').value = data.event.start.replace(' ', 'T');
+            document.getElementById('end').value = data.event.end.replace(' ', 'T');
+            document.getElementById('sala').value = data.event.sala;
+
+            const participantsSelect = $('#participants');
+            participantsSelect.val(null).trigger('change');
+            data.participants.forEach(id => {
+              const option = new Option('Participante', id, true, true);
+              participantsSelect.append(option);
+            });
+            participantsSelect.trigger('change');
+
+            // Mostrar botão de exclusão se for criador
+            if (data.event.created_by == loggedUserId) {
+              document.getElementById('deleteEventBtn').style.display = 'inline-block';
+            } else {
+              document.getElementById('deleteEventBtn').style.display = 'none';
+            }
+
+            eventModal.show();
+          });
       }
     });
 
@@ -131,36 +159,59 @@
             eventModal.hide();
             calendar.refetchEvents();
           } else {
-            alert('Erro ao salvar evento');
+            alert(res.data.error || 'Erro ao salvar evento');
           }
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+          console.error(err);
+          alert('Erro ao salvar evento');
+        });
+    });
+
+    document.getElementById('deleteEventBtn').addEventListener('click', function () {
+      const eventId = document.getElementById('event_id').value;
+      if (confirm('Tem certeza que deseja excluir este evento?')) {
+        axios.post('../event/delete', { id: eventId })
+          .then(res => {
+            if (res.data.success) {
+              alert('Evento excluído com sucesso!');
+              eventModal.hide();
+              calendar.refetchEvents();
+            } else {
+              alert('Erro ao excluir evento.');
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            alert('Erro ao excluir evento.');
+          });
+      }
     });
   });
 
   function fetchNotifications() {
-  axios.get('../notification/get')
-    .then(res => {
-      const notifList = document.getElementById('notif-list');
-      const notifCount = document.getElementById('notif-count');
-      notifList.innerHTML = '';
+    axios.get('../notification/get')
+      .then(res => {
+        const notifList = document.getElementById('notif-list');
+        const notifCount = document.getElementById('notif-count');
+        notifList.innerHTML = '';
 
-      if (res.data.length === 0) {
-        notifList.innerHTML = '<li><span class="dropdown-item">Sem notificações</span></li>';
-        notifCount.textContent = '0';
-      } else {
-        notifCount.textContent = res.data.length;
-        res.data.forEach(n => {
-          const li = document.createElement('li');
-          li.innerHTML = `<a class="dropdown-item" href="../notification/markAndRedirect?id=${n.id}&link=${encodeURIComponent(n.link || '../event/index')}">${n.message}</a>`;
-          notifList.appendChild(li);
-        });
-      }
-    });
-}
+        if (res.data.length === 0) {
+          notifList.innerHTML = '<li><span class="dropdown-item">Sem notificações</span></li>';
+          notifCount.textContent = '0';
+        } else {
+          notifCount.textContent = res.data.length;
+          res.data.forEach(n => {
+            const li = document.createElement('li');
+            li.innerHTML = `<a class="dropdown-item" href="../notification/markAndRedirect?id=${n.id}&link=${encodeURIComponent(n.link || '../event/index')}">${n.message}</a>`;
+            notifList.appendChild(li);
+          });
+        }
+      });
+  }
 
-setInterval(fetchNotifications, 10000); 
-fetchNotifications(); 
+  setInterval(fetchNotifications, 10000);
+  fetchNotifications();
 </script>
 </body>
 </html>
