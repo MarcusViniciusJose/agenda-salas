@@ -1,4 +1,3 @@
-<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -119,10 +118,16 @@
       eventClick: function(info) {
       const event = info.event;
       axios.get(`../event/getByIdAjax?id=${event.id}`)
-        .then(res => {
-          const data = res.data;
+      .then(res => {
+      const data = res.data;
+      console.log(data); // Verifique se tem: { event: {...}, participants: [...] }
 
-      document.getElementById('event_id').value = event.id;
+      if (!data.event) {
+        alert("Erro ao carregar dados do evento.");
+        return;
+      }
+
+      document.getElementById('event_id').value = data.event.id;
       document.getElementById('title').value = data.event.title;
       document.getElementById('start').value = data.event.start.replace(' ', 'T');
       document.getElementById('end').value = data.event.end.replace(' ', 'T');
@@ -131,10 +136,12 @@
       const participantsSelect = $('#participants');
       participantsSelect.val(null).trigger('change');
 
-      data.participants.forEach(id => {
-        const option = new Option('Carregando...', id, true, true);
-        participantsSelect.append(option);
-      });
+      if (Array.isArray(data.participants)) {
+          data.participants.forEach(id => {
+            const option = new Option('Carregando...', id, true, true);
+            participantsSelect.append(option);
+          });
+      }
 
       participantsSelect.trigger('change');
 
@@ -198,23 +205,30 @@
 
   function fetchNotifications() {
     axios.get('../notification/get')
-      .then(res => {
-        const notifList = document.getElementById('notif-list');
-        const notifCount = document.getElementById('notif-count');
-        notifList.innerHTML = '';
+  .then(res => {
+    console.log("🔍 Resposta da API de notificações:", res.data); // 👈 ADICIONE ESTA LINHA
+    
+    const notifList = document.getElementById('notif-list');
+    const notifCount = document.getElementById('notif-count');
+    notifList.innerHTML = '';
 
-        if (res.data.length === 0) {
-          notifList.innerHTML = '<li><span class="dropdown-item">Sem notificações</span></li>';
-          notifCount.textContent = '0';
-        } else {
-          notifCount.textContent = res.data.length;
-          res.data.forEach(n => {
-            const li = document.createElement('li');
-            li.innerHTML = `<a class="dropdown-item" href="../notification/markAndRedirect?id=${n.id}&link=${encodeURIComponent(n.link || '../event/index')}">${n.message}</a>`;
-            notifList.appendChild(li);
-          });
-        }
+    // Verificação segura
+    if (!Array.isArray(res.data) || res.data.length === 0) {
+      notifList.innerHTML = '<li><span class="dropdown-item">Sem notificações</span></li>';
+      notifCount.textContent = '0';
+    } else {
+      notifCount.textContent = res.data.length;
+      res.data.forEach(n => {
+        const li = document.createElement('li');
+        li.innerHTML = `<a class="dropdown-item" href="../notification/markAndRedirect?id=${n.id}&link=${encodeURIComponent(n.link || '../event/index')}">${n.message}</a>`;
+        notifList.appendChild(li);
       });
+    }
+  })
+  .catch(err => {
+    console.error("❌ Erro ao buscar notificações:", err);
+  });
+
   }
 
   setInterval(fetchNotifications, 10000);

@@ -17,7 +17,7 @@
   <h4 class="mt-4">👥 Participantes</h4>
   <ul class="list-group">
     <?php foreach ($participants as $p): ?>
-      <li class="list-group-item"><?= htmlspecialchars($p['nome']) ?> (<?= htmlspecialchars($p['email']) ?>)</li>
+      <li class="list-group-item"><?= htmlspecialchars($p['name']) ?> (<?= htmlspecialchars($p['email']) ?>)</li>
     <?php endforeach; ?>
   </ul>
 

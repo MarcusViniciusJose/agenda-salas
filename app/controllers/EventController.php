@@ -18,7 +18,7 @@ class EventController {
         session_start();
 
         $event = new Event();
-        $userModel = new User(); 
+        $userModel = new User();
         $notificationModel = new Notification();
 
         $title = $_POST['title'];
@@ -28,17 +28,24 @@ class EventController {
         $created_by = $_SESSION['user']['id'] ?? null;
         $participants = $_POST['participants'] ?? [];
 
+        $titleSafe = htmlspecialchars($title);
+        $startSafe = htmlspecialchars(date('d/m/Y H:i', strtotime($start)));
+
         if (!$created_by) {
             echo json_encode(['success' => false, 'error' => 'Usuário não autenticado.']);
             return;
         }
 
-        $eventId = $_POST['event_id'];
+        $eventId = $_POST['event_id'] ?? null;
+        if (!$eventId && $event->hasConflict($start, $end, $sala)) {
+            echo json_encode(['success' => false, 'error' => 'Conflito de agendamento! Já existe um evento nessa sala nesse horário.']);
+            return;
+        }
 
-        if($eventId){
+        if ($eventId) {
             $event->update($eventId, $title, $start, $end, $sala);
             $event->removeParticipants($eventId);
-        }else{
+        } else {
             $eventId = $event->create($title, $start, $end, $sala, $created_by);
         }
 
@@ -54,18 +61,26 @@ class EventController {
             }
         }
 
-        echo json_encode(['success' => true]);
+        echo json_encode([
+            'success' => true,
+            'event' => [
+                'id' => $eventId,
+                'title' => $title,
+                'start' => $start,
+                'end' => $end,
+                'sala' => $sala
+            ]
+        ]);
     }
 
-    public function show(){
+    public function show() {
         $eventId = $_GET['id'] ?? null;
 
-        if(!eventId){
+        if (!$eventId) {
             echo "Evento não encontrado";
             return;
         }
 
-        $eventId = $_GET['id'];
         $event = new Event();
         $user = new User();
         $eventData = $event->getById($eventId);
@@ -74,9 +89,9 @@ class EventController {
         require '../app/views/event/show.php';
     }
 
-    public function getByIdAjax(){
-        if(!assert($_GET['id'])){
-            echo json_encode(['error' => 'ID não informado'])
+    public function getByIdAjax() {
+        if (!isset($_GET['id']) || empty($_GET['id'])) {
+            echo json_encode(['error' => 'ID não informado']);
             return;
         }
 
@@ -86,26 +101,30 @@ class EventController {
         $participantsIds = array_column($participants, 'id');
 
         echo json_encode([
-            'event' => $event;
-            'participants' => $participantsIds;
-        ])
+            'event' => $eventData,
+            'participants' => $participantsIds
+        ]);
     }
 
-    public function delete(){
+    public function delete() {
         session_start();
 
         $eventId = $_POST['id'] ?? null;
         $userId = $_SESSION['user']['id'] ?? null;
 
-        if(!$eventId || !$userId){
-            echo json_encode(['success' => false, 'error' => 'ID ou usuário ausente']);
+        if (!$eventId) {
+            echo json_encode(['success' => false, 'error' => 'ID do evento não informado.']);
+            return;
+        }
+        if (!$userId) {
+            echo json_encode(['success' => false, 'error' => 'Usuário não autenticado.']);
             return;
         }
 
-        $event = new Event()
+        $event = new Event();
         $eventData = $event->getById($eventId);
 
-        if(!$eventData || $eventData['created_by'] != $userId){
+        if (!$eventData || $eventData['created_by'] != $userId) {
             echo json_encode(['success' => false, 'error' => 'Você não tem permissão para excluir este evento']);
             return;
         }
