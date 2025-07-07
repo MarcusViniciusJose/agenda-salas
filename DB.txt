@@ -1,6 +1,6 @@
 CREATE DATABASE agendamento;
 
-USE agndamento;
+USE agendamento;
 
 CREATE TABLE users(
 	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -18,3 +18,24 @@ CREATE TABLE events(
 	created_by INT,
 	FOREIGN KEY(created_by) REFERENCES users(id)
 );
+
+CREATE TABLE events_participants (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  event_id INT,
+  user_id INT,
+  FOREIGN KEY (event_id) REFERENCES events(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE notifications (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  message TEXT NOT NULL,
+  link VARCHAR(255),
+  is_read TINYINT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+INSERT INTO users (name, email, password)
+VALUES ('Marcus José', 'markinh00br123@gmail.com', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
