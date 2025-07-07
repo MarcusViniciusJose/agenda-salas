@@ -120,7 +120,7 @@
       axios.get(`../event/getByIdAjax?id=${event.id}`)
       .then(res => {
       const data = res.data;
-      console.log(data); // Verifique se tem: { event: {...}, participants: [...] }
+      console.log(data); 
 
       if (!data.event) {
         alert("Erro ao carregar dados do evento.");
@@ -206,7 +206,7 @@
   function fetchNotifications() {
     axios.get('../notification/get')
   .then(res => {
-    console.log("🔍 Resposta da API de notificações:", res.data); // 👈 ADICIONE ESTA LINHA
+    console.log("Resposta da API de notificações:", res.data);
     
     const notifList = document.getElementById('notif-list');
     const notifCount = document.getElementById('notif-count');
@@ -226,7 +226,7 @@
     }
   })
   .catch(err => {
-    console.error("❌ Erro ao buscar notificações:", err);
+    console.error("Erro ao buscar notificações:", err);
   });
 
   }
