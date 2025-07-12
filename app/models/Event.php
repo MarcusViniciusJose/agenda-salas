@@ -68,16 +68,18 @@ class Event {
     }
 
     public function removeParticipants($eventId){
-        $stmt = $this->conn->prepare("DELETE FROM events_participants WHERE event_id = :event_id"); // ❗ Correção: name da tabela estava errado
+        $stmt = $this->conn->prepare("DELETE FROM events_participants WHERE event_id = :event_id"); 
         return $stmt->execute([':event_id' => $eventId]);
     }
 
-    public function delete($id){
-        // Deleta participantes primeiro (por dependência)
-        $this->conn->prepare("DELETE FROM events_participants WHERE event_id = :id")->execute([':id' => $id]);
-        // Depois deleta o evento
-        $stmt = $this->conn->prepare("DELETE FROM events WHERE id = :id");
-        return $stmt->execute([':id' => $id]);
+    public function delete($id) {
+        // Remove os participantes do evento primeiro
+        $stmtParticipants = $this->conn->prepare("DELETE FROM events_participants WHERE event_id = ?");
+        $stmtParticipants->execute([$id]);
+    
+        // Agora pode excluir o evento
+        $stmt = $this->conn->prepare("DELETE FROM events WHERE id = ?");
+        return $stmt->execute([$id]);
     }
 
     public function hasConflict($start, $end, $sala){

@@ -1,3 +1,9 @@
+<?php
+// Garante que as variáveis estão definidas para evitar warnings
+$eventData = $eventData ?? null;
+$participants = $participants ?? [];
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -9,19 +15,28 @@
 <div class="container mt-4">
   <h2>📋 Detalhes do Evento</h2>
   <hr>
-  <p><strong>Título:</strong> <?= htmlspecialchars($event['title']) ?></p>
-  <p><strong>Início:</strong> <?= date('d/m/Y H:i', strtotime($event['start'])) ?></p>
-  <p><strong>Fim:</strong> <?= date('d/m/Y H:i', strtotime($event['end'])) ?></p>
-  <p><strong>Sala:</strong> <?= $event['sala'] == 'reuniao' ? 'Sala de Reunião' : 'Sala de Treinamento' ?></p>
 
-  <h4 class="mt-4">👥 Participantes</h4>
-  <ul class="list-group">
-    <?php foreach ($participants as $p): ?>
-      <li class="list-group-item"><?= htmlspecialchars($p['name']) ?> (<?= htmlspecialchars($p['email']) ?>)</li>
-    <?php endforeach; ?>
-  </ul>
+  <?php if ($eventData): ?>
+    <p><strong>Título:</strong> <?= htmlspecialchars($eventData['title']) ?></p>
+    <p><strong>Início:</strong> <?= date('d/m/Y H:i', strtotime($eventData['start'])) ?></p>
+    <p><strong>Fim:</strong> <?= date('d/m/Y H:i', strtotime($eventData['end'])) ?></p>
+    <p><strong>Sala:</strong> <?= $eventData['sala'] == 'reuniao' ? 'Sala de Reunião' : 'Sala de Treinamento' ?></p>
 
-  <a href="../event/index" class="btn btn-secondary mt-4">← Voltar ao calendário</a>
+    <h4 class="mt-4">👥 Participantes</h4>
+    <ul class="list-group">
+      <?php if (!empty($participants)): ?>
+        <?php foreach ($participants as $p): ?>
+          <li class="list-group-item"><?= htmlspecialchars($p['name']) ?> (<?= htmlspecialchars($p['email']) ?>)</li>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <li class="list-group-item">Nenhum participante cadastrado.</li>
+      <?php endif; ?>
+    </ul>
+  <?php else: ?>
+    <div class="alert alert-danger mt-3">Evento não encontrado.</div>
+  <?php endif; ?>
+
+  <a href="/agenda-salas/event/index" class="btn btn-secondary mt-4">← Voltar ao calendário</a>
 </div>
 </body>
 </html>

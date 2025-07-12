@@ -186,19 +186,20 @@
       const eventId = document.getElementById('event_id').value;
       if (confirm('Tem certeza que deseja excluir este evento?')) {
         axios.post('../event/delete', { id: eventId })
-          .then(res => {
-            if (res.data.success) {
-              alert('Evento excluído com sucesso!');
-              eventModal.hide();
-              calendar.refetchEvents();
-            } else {
-              alert('Erro ao excluir evento.');
-            }
-          })
-          .catch(err => {
-            console.error(err);
-            alert('Erro ao excluir evento.');
-          });
+        .then(res => {
+          console.log('Resposta do backend:', res.data); // 👈 adicione isso
+          if (res.data.success) {
+            alert('Evento excluído com sucesso!');
+            eventModal.hide();
+            calendar.refetchEvents();
+          } else {
+            alert(res.data.error || 'Erro ao excluir evento.');
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          alert('Erro ao excluir evento.');
+        });
       }
     });
   });
@@ -220,7 +221,11 @@
       notifCount.textContent = res.data.length;
       res.data.forEach(n => {
         const li = document.createElement('li');
-        li.innerHTML = `<a class="dropdown-item" href="../notification/markAndRedirect?id=${n.id}&link=${encodeURIComponent(n.link || '../event/index')}">${n.message}</a>`;
+        li.innerHTML = `
+          <a class="dropdown-item" href="../notification/markAndRedirect?id=${n.id}&link=${encodeURIComponent('/agenda-salas' + (n.link || '/event/index'))}">
+            ${n.message}
+          </a>`;
+
         notifList.appendChild(li);
       });
     }

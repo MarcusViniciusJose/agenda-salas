@@ -15,7 +15,6 @@ class EventController {
     }
 
     public function store() {
-        session_start();
 
         $event = new Event();
         $userModel = new User();
@@ -56,10 +55,13 @@ class EventController {
                 $notificationModel->create(
                     $userId,
                     "Você foi convidado para o evento <strong>$titleSafe</strong> no dia <strong>$startSafe</strong>.",
-                    "/event/show/$eventId"
+                    "/public/index.php?url=event/show&id=3"
                 );
             }
         }
+
+        header('Content-Type: application/json; charset=utf-8');
+        http_response_code(200);
 
         echo json_encode([
             'success' => true,
@@ -71,22 +73,33 @@ class EventController {
                 'sala' => $sala
             ]
         ]);
+
+        exit;
+        
     }
 
     public function show() {
         $eventId = $_GET['id'] ?? null;
-
+    
         if (!$eventId) {
             echo "Evento não encontrado";
             return;
         }
-
-        $event = new Event();
-        $user = new User();
-        $eventData = $event->getById($eventId);
-        $participants = $event->getParticipants($eventId);
-
-        require '../app/views/event/show.php';
+    
+        $eventModel = new Event();
+        $userModel = new User();
+    
+        $eventData = $eventModel->getById($eventId);
+        $participants = $eventModel->getParticipants($eventId);
+    
+        // Verifica se encontrou o evento
+        if (!$eventData) {
+            echo "Evento não encontrado no banco de dados.";
+            return;
+        }
+    
+        // Inclui a view com as variáveis corretamente definidas
+        require '../app/views/event_show.php';
     }
 
     public function getByIdAjax() {
@@ -107,29 +120,30 @@ class EventController {
     }
 
     public function delete() {
-        session_start();
-
-        $eventId = $_POST['id'] ?? null;
-        $userId = $_SESSION['user']['id'] ?? null;
-
+        header('Content-Type: application/json');
+    
+        // Lê o corpo JSON da requisição
+        $data = json_decode(file_get_contents("php://input"), true);
+        $eventId = $data['id'] ?? null;
+    
         if (!$eventId) {
-            echo json_encode(['success' => false, 'error' => 'ID do evento não informado.']);
-            return;
+            echo json_encode(['success' => false, 'error' => 'ID do evento não fornecido.']);
+            exit;
         }
-        if (!$userId) {
-            echo json_encode(['success' => false, 'error' => 'Usuário não autenticado.']);
-            return;
-        }
-
+    
         $event = new Event();
-        $eventData = $event->getById($eventId);
-
-        if (!$eventData || $eventData['created_by'] != $userId) {
-            echo json_encode(['success' => false, 'error' => 'Você não tem permissão para excluir este evento']);
-            return;
+        $deleted = $event->delete($eventId);
+    
+        if ($deleted) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Erro ao excluir evento.']);
         }
-
-        $event->delete($eventId);
-        echo json_encode(['success' => true]);
+    
+        exit;
     }
+    
+    
+    
+    
 }
