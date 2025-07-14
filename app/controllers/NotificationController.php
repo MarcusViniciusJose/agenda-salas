@@ -58,4 +58,18 @@ class NotificationController {
         $data = $model->countByUser($user_id);
         echo json_encode($data);
     }
+
+    public function history(){
+        $user_id = $_SESSION['user']['id'] ?? null;
+
+        if(!$user_id){
+            echo 'Acesso negado';
+            return;
+        }
+
+        $model = new Notification();
+        $notifications = $model->getAllByUser($user_id);
+
+        require '../app/views/notification/history.php';
+    }
 }

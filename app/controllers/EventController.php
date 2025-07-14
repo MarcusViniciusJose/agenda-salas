@@ -55,7 +55,7 @@ class EventController {
                 $notificationModel->create(
                     $userId,
                     "Você foi convidado para o evento <strong>$titleSafe</strong> no dia <strong>$startSafe</strong>.",
-                    "/public/index.php?url=event/show&id=3"
+                    "/public/index.php?url=event/show&id=$eventId"
                 );
             }
         }
@@ -142,8 +142,5 @@ class EventController {
     
         exit;
     }
-    
-    
-    
     
 }

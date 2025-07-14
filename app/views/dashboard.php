@@ -205,36 +205,44 @@
   });
 
   function fetchNotifications() {
-    axios.get('../notification/get')
-  .then(res => {
-    console.log("Resposta da API de notificações:", res.data);
-    
-    const notifList = document.getElementById('notif-list');
-    const notifCount = document.getElementById('notif-count');
-    notifList.innerHTML = '';
+  axios.get('../notification/get')
+    .then(res => {
+      const notifList = document.getElementById('notif-list');
+      const notifCount = document.getElementById('notif-count');
+      notifList.innerHTML = '';
 
-    // Verificação segura
-    if (!Array.isArray(res.data) || res.data.length === 0) {
-      notifList.innerHTML = '<li><span class="dropdown-item">Sem notificações</span></li>';
-      notifCount.textContent = '0';
-    } else {
-      notifCount.textContent = res.data.length;
-      res.data.forEach(n => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <a class="dropdown-item" href="../notification/markAndRedirect?id=${n.id}&link=${encodeURIComponent('/agenda-salas' + (n.link || '/event/index'))}">
-            ${n.message}
-          </a>`;
+      if (!Array.isArray(res.data) || res.data.length === 0) {
+        notifList.innerHTML = '<li><span class="dropdown-item">Sem notificações</span></li>';
+        notifCount.textContent = '0';
+      } else {
+        notifCount.textContent = res.data.length;
 
-        notifList.appendChild(li);
-      });
-    }
-  })
-  .catch(err => {
-    console.error("Erro ao buscar notificações:", err);
-  });
+        res.data.forEach(n => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <a class="dropdown-item" href="../notification/markAndRedirect?id=${n.id}&link=${encodeURIComponent('/agenda-salas' + (n.link || '/event/index'))}">
+              ${n.message}
+            </a>`;
+          notifList.appendChild(li);
+        });
+      }
 
-  }
+      // 🔽 Sempre adiciona o botão, mesmo sem notificações
+      const divider = document.createElement('li');
+      divider.innerHTML = `<hr class="dropdown-divider">`;
+      notifList.appendChild(divider);
+
+      const viewAll = document.createElement('li');
+      viewAll.innerHTML = `<a class="dropdown-item text-center" href="/agenda-salas/notification/history">Ver todas as notificações</a>`;
+      notifList.appendChild(viewAll);
+    })
+    .catch(err => {
+      console.error("Erro ao buscar notificações:", err);
+    });
+}
+
+
+
 
   setInterval(fetchNotifications, 10000);
   fetchNotifications();

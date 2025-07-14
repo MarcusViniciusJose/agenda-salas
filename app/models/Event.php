@@ -10,10 +10,26 @@ class Event {
     }
 
     public function getAll() {
-        $stmt = $this->conn->prepare("SELECT * FROM events");
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->conn->query("SELECT * FROM events");
+        $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+        foreach ($events as &$event) {
+            switch ($event['sala']) {
+                case 'reuniao':
+                    $event['color'] = '#007bff'; // azul
+                    break;
+                case 'treinamento':
+                    $event['color'] = '#28a745'; // verde
+                    break;
+                default:
+                    $event['color'] = '#6c757d'; // cinza
+                    break;
+            }
+        }
+    
+        return $events;
     }
+    
 
     public function create($title, $start, $end, $sala, $created_by){
         $query = "INSERT INTO events (title, start, end, sala, created_by)
