@@ -187,7 +187,7 @@
       if (confirm('Tem certeza que deseja excluir este evento?')) {
         axios.post('../event/delete', { id: eventId })
         .then(res => {
-          console.log('Resposta do backend:', res.data); // 👈 adicione isso
+          console.log('Resposta do backend:', res.data); 
           if (res.data.success) {
             alert('Evento excluído com sucesso!');
             eventModal.hide();

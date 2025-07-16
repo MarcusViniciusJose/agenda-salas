@@ -37,8 +37,8 @@ class NotificationController {
             $model->markAsRead($id);
         }
 
-        if (!str_starts_with($link, '/')) {
-            $link = '/event/index';
+        if (!str_starts_with($link, '/agenda-salas')) {
+            $link = '/agenda-salas' . $link;
         }
 
         header("Location: $link");

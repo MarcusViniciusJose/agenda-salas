@@ -55,13 +55,12 @@ class EventController {
                 $notificationModel->create(
                     $userId,
                     "Você foi convidado para o evento <strong>$titleSafe</strong> no dia <strong>$startSafe</strong>.",
-                    "/public/index.php?url=event/show&id=$eventId"
+                    "/public/index.php?url=event/show&id=$eventId",
+                    $eventId
                 );
             }
         }
 
-        header('Content-Type: application/json; charset=utf-8');
-        http_response_code(200);
 
         echo json_encode([
             'success' => true,
@@ -132,9 +131,16 @@ class EventController {
         }
     
         $event = new Event();
+        $notificationModel = new Notification();
+
+        $notificationModel->deleteByEventId($eventId);
+
         $deleted = $event->delete($eventId);
     
         if ($deleted) {
+
+            $notificationModel->deleteByEventId($eventId);
+
             echo json_encode(['success' => true]);
         } else {
             echo json_encode(['success' => false, 'error' => 'Erro ao excluir evento.']);

@@ -7,17 +7,23 @@
 </head>
 <body>
 <div class="container mt-5">
-  <h3>🔔 Histórico de Notificações</h3>
-  <hr>
+  <h3 class="mb-4">🔔 Histórico de Notificações</h3>
 
   <?php if (empty($notifications)): ?>
-    <p>Você ainda não recebeu nenhuma notificação.</p>
+    <div class="alert alert-info">Você ainda não recebeu nenhuma notificação.</div>
   <?php else: ?>
     <ul class="list-group">
       <?php foreach ($notifications as $n): ?>
-        <li class="list-group-item d-flex justify-content-between align-items-center <?= $n['read_at'] ? 'text-muted' : 'fw-bold' ?>">
-          <span><?= htmlspecialchars($n['message']) ?></span>
-          <a href="<?= htmlspecialchars($n['link']) ?>" class="btn btn-sm btn-outline-primary">Ver</a>
+        <?php
+          $isRead = !empty($n['is_read']);
+          $statusClass = $isRead ? 'text-muted' : 'fw-bold';
+          $statusIcon = $isRead ? '✅' : '🔔';
+        ?>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span class="<?= $statusClass ?>">
+            <?= $statusIcon ?> <?= $n['message'] ?>
+          </span>
+          <a href="/agenda-salas<?= htmlspecialchars($n['link']) ?>" class="btn btn-sm btn-outline-primary">Ver</a>
         </li>
       <?php endforeach; ?>
     </ul>

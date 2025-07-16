@@ -92,10 +92,13 @@ class Event {
         // Remove os participantes do evento primeiro
         $stmtParticipants = $this->conn->prepare("DELETE FROM events_participants WHERE event_id = ?");
         $stmtParticipants->execute([$id]);
-    
+
         // Agora pode excluir o evento
         $stmt = $this->conn->prepare("DELETE FROM events WHERE id = ?");
         return $stmt->execute([$id]);
+
+        
+       
     }
 
     public function hasConflict($start, $end, $sala){

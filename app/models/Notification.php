@@ -9,15 +9,15 @@ class Notification {
         $this->conn = $db->connect();
     }
 
-    public function create($userId, $message, $link) {
+    public function create($userId, $message, $link, $eventId = null) {
         if (empty($userId) || empty($message)) {
             return false;
         }
 
-        $stmt = $this->conn->prepare("INSERT INTO notifications (user_id, message, link, is_read) 
-            VALUES (?, ?, ?, 0)
+        $stmt = $this->conn->prepare("INSERT INTO notifications (user_id, message, link, is_read, event_id) 
+            VALUES (?, ?, ?, 0, ?)
         ");
-        return $stmt->execute([$userId, $message, $link]);
+        return $stmt->execute([$userId, $message, $link, $eventId]);
     }
 
     public function getUnreadByUser($user_id) {
@@ -53,5 +53,10 @@ class Notification {
         ");
         $stmt->execute([$user_id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function deleteByEventId($eventId){
+        $stmt = $this->conn->prepare("DELETE FROM notifications WHERE event_id = ?");
+        return $stmt->execute([$eventId]);
     }
 }
