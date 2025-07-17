@@ -72,4 +72,18 @@ class NotificationController {
 
         require '../app/views/notification/history.php';
     }
+
+    public function confirm(){
+        $id = $_GET['id'];
+        $notification = new Notification();
+        $notification->updateStatus($id, 'accepted');
+        header('Location: /agenda-salas/public/dashboard');
+    }
+
+    public function reject(){
+        $id = $_GET['id'];
+        $notification = new Notification();
+        $notification->updateStatus($id, 'rejected');
+        header('Location: /agenda-salas/public/dashboard');
+    }
 }

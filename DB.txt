@@ -30,12 +30,24 @@ CREATE TABLE events_participants (
 CREATE TABLE notifications (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
+  event_id INT NOT NULL,
   message TEXT NOT NULL,
   link VARCHAR(255),
   is_read TINYINT DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id)
+  status ENUM('peding', 'accept', 'reject') DEFAULT 'peding',
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (event_id) REFERENCES events(id)
 );
 
 INSERT INTO users (name, email, password)
-VALUES ('Marcus José', 'markinh00br123@gmail.com', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+VALUES ('Marcus José', 'marcus.vinicius@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('João Rodolfo', 'compras@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Ana Paula', 'ana.francisco@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Claudia Lopes', 'claudia.lopes@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
