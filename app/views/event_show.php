@@ -35,7 +35,6 @@ $participants = $participants ?? [];
   <?php else: ?>
     <div class="alert alert-danger mt-3">Evento não encontrado.</div>
   <?php endif; ?>
-
   <a href="/agenda-salas/event/index" class="btn btn-secondary mt-4">← Voltar ao calendário</a>
 </div>
 </body>

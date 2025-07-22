@@ -60,8 +60,4 @@ class Notification {
         return $stmt->execute([$eventId]);
     }
 
-    public function updateStatus($id, $status){
-        $stmt = $this->conn->prepare("UPDATE notifications SET status = ? WHERE id = ?");
-        return $stmt->execute([$status, $id]);
-    }
 }

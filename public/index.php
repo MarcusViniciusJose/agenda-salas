@@ -19,9 +19,4 @@ if (class_exists($controllerName) && method_exists($controllerName, $method)) {
     echo "Rota não encontrada.";
 }
 
-if($_GET['action'] == 'confirm_notification'){
-    (new NotificationController())->confirm();
 
-}elseif($_GET['action'] == 'reject_notification'){
-    (new NotificationController())->reject();
-}
