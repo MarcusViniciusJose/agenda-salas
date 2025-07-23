@@ -1,12 +1,13 @@
 <?php
 
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../config/database.php';
 
 class Event {
     private $conn;
 
     public function __construct() {
-        $this->conn = (new Database())->connect();
+        $db = new Database();
+        $this->conn = $db->connect();
     }
 
     public function getAll() {

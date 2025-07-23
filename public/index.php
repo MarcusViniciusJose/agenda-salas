@@ -8,7 +8,7 @@ require_once '../app/controllers/AuthController.php';
 require_once '../app/controllers/EventController.php';
 require_once '../app/controllers/UserController.php';
 require_once '../app/controllers/NotificationController.php'; 
-
+require_once '../app/controllers/CarEventController.php'; 
 $controllerName = ucfirst($url[0]) . 'Controller';
 $method = $url[1] ?? 'index';
 
