@@ -23,6 +23,7 @@ CREATE TABLE events_participants (
   id INT AUTO_INCREMENT PRIMARY KEY,
   event_id INT,
   user_id INT,
+  status ENUM('pendente', 'aceito', 'recusado') DEFAULT 'pendente',
   FOREIGN KEY (event_id) REFERENCES events(id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -38,6 +39,18 @@ CREATE TABLE notifications (
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (event_id) REFERENCES events(id)
 );
+
+CREATE TABLE car_events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    start DATETIME NOT NULL,
+    end DATETIME NOT NULL,
+    user_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 
 INSERT INTO users (name, email, password)
 VALUES ('Marcus José', 'marcus.vinicius@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
