@@ -16,7 +16,7 @@ class CarEvent{
     }
 
     public function getAllByUser($userId){
-        $stmt = $this->conn->prepare("SELECT *FROM car_events WHERE user_id = ?");
+        $stmt = $this->conn->prepare("SELECT * FROM car_events WHERE user_id = ?");
         $stmt->execute([$userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -34,5 +34,21 @@ class CarEvent{
     public function delete($id){
         $stmt = $this->conn->prepare("DELETE FROM car_events WHERE id = ?");
         return $stmt->execute([$id]);
+    }
+
+    public function hasConflict($data){
+        $stmt = $this->conn->prepare("SELECT COUNT(*) as total 
+            FROM car_events 
+            WHERE (start < :end AND end > :start)
+        ");
+        $stmt->execute([$data['start'], $data['end']]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] > 0;
+    }
+
+    public function getById($id){
+        $stmt = $this->conn->prepare("SELECT * FROM car_events WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
