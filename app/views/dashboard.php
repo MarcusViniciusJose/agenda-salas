@@ -30,6 +30,11 @@
         </ul>
       </li>
     </ul>
+    <ul>
+    <li><a href="/agenda-salas/dashboard">Agenda de Salas</a></li>
+    <li><a href="/agenda-salas/app/views/cars">Agenda de Carros</a></li>
+    <li><a href="../auth/logout">Sair</a></li>
+  </ul>
   </div>
 </nav>
 

@@ -36,12 +36,15 @@ class CarEvent{
         return $stmt->execute([$id]);
     }
 
-    public function hasConflict($data){
+    public function hasConflict($start, $end){
         $stmt = $this->conn->prepare("SELECT COUNT(*) as total 
             FROM car_events 
             WHERE (start < :end AND end > :start)
         ");
-        $stmt->execute([$data['start'], $data['end']]);
+        $stmt->execute([
+            ':start' => $start,
+            ':end' => $end
+        ]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['total'] > 0;
     }
