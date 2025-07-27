@@ -22,7 +22,7 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <span class="navbar-brand">Agenda de Salas</span>
+    <span class="navbar-brand">Agenda do Carro</span>
     <ul class="navbar-nav ms-auto">
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" id="notif-icon">
@@ -157,6 +157,49 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
+
+function fetchNotifications() {
+  axios.get('../../../notification/get')
+    .then(res => {
+      const notifList = document.getElementById('notif-list');
+      const notifCount = document.getElementById('notif-count');
+      notifList.innerHTML = '';
+
+      if (!Array.isArray(res.data) || res.data.length === 0) {
+        notifList.innerHTML = '<li><span class="dropdown-item">Sem notificações</span></li>';
+        notifCount.textContent = '0';
+      } else {
+        notifCount.textContent = res.data.length;
+
+        res.data.forEach(n => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <a class="dropdown-item" href="../notification/markAndRedirect?id=${n.id}&link=${encodeURIComponent('/agenda-salas' + (n.link || '/event/index'))}">
+              ${n.message}
+            </a>`;
+          notifList.appendChild(li);
+        });
+      }
+
+      // 🔽 Sempre adiciona o botão, mesmo sem notificações
+      const divider = document.createElement('li');
+      divider.innerHTML = `<hr class="dropdown-divider">`;
+      notifList.appendChild(divider);
+
+      const viewAll = document.createElement('li');
+      viewAll.innerHTML = `<a class="dropdown-item text-center" href="/agenda-salas/notification/history">Ver todas as notificações</a>`;
+      notifList.appendChild(viewAll);
+    })
+    .catch(err => {
+      console.error("Erro ao buscar notificações:", err);
+    });
+}
+
+
+
+
+  setInterval(fetchNotifications, 10000);
+  fetchNotifications();
 </script>
 </body>
 </html>
