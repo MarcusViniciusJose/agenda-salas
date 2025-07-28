@@ -17,26 +17,50 @@
   </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
   <div class="container-fluid">
-    <span class="navbar-brand">Agenda de Salas</span>
-    <ul class="navbar-nav ms-auto">
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" id="notif-icon">
-          🔔 <span class="badge bg-danger" id="notif-count">0</span>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end" id="notif-list">
-          <li><span class="dropdown-item">Sem notificações</span></li>
-        </ul>
-      </li>
-    </ul>
-    <ul>
-    <li><a href="/agenda-salas/dashboard">Agenda de Salas</a></li>
-    <li><a href="/agenda-salas/app/views/cars">Agenda de Carros</a></li>
-    <li><a href="../auth/logout">Sair</a></li>
-  </ul>
+    <!-- Marca/logo -->
+    <a class="navbar-brand fw-bold" href="#">Agendamento de Salas</a>
+
+    <!-- Botão do menu para dispositivos móveis -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Conteúdo da navbar -->
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <!-- Links do menu à esquerda -->
+        <li class="nav-item">
+          <a class="nav-link" href="/agenda-salas/event/index">Agenda de Salas</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/agenda-salas/app/views/cars">Agenda do Carro</a>
+        </li>
+      </ul>
+
+      <!-- Notificações e botão de logout à direita -->
+      <ul class="navbar-nav ms-auto">
+        <!-- Notificações -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle position-relative" href="#" role="button" data-bs-toggle="dropdown" id="notif-icon">
+            🔔
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notif-count">0</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" id="notif-list">
+            <li><span class="dropdown-item">Sem notificações</span></li>
+          </ul>
+        </li>
+
+        <!-- Logout -->
+        <li class="nav-item">
+          <a class="nav-link text-danger fw-semibold" href="../auth/logout">Sair</a>
+        </li>
+      </ul>
+    </div>
   </div>
 </nav>
+
 
 <div class="container mt-4">
   <div id="calendar"></div>
@@ -47,7 +71,7 @@
   <div class="modal-dialog">
     <form id="eventForm" class="modal-content p-3 rounded-3 shadow-sm border-0">
       <div class="modal-header">
-        <h5 class="modal-title" id="eventModalLabel">Novo Evento</h5>
+        <h5 class="modal-title" id="eventModalLabel">Novo Agendamento</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
       </div>
       <div class="modal-body">
@@ -232,7 +256,6 @@
         });
       }
 
-      // 🔽 Sempre adiciona o botão, mesmo sem notificações
       const divider = document.createElement('li');
       divider.innerHTML = `<hr class="dropdown-divider">`;
       notifList.appendChild(divider);
