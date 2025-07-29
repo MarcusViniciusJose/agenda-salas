@@ -109,16 +109,39 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
   const calendarEl = document.getElementById('calendar');
   const carModal = new bootstrap.Modal(document.getElementById('carModal'));
   const form = document.getElementById('carForm');
+
+  const feriados = [];
+
+  try {
+    const response = await axios.get(`https://brasilapi.com.br/api/feriados/v1/${new Date().getFullYear()}`);
+    response.data.forEach(feriado => feriados.push(feriado.date)); // Ex: '2025-09-07'
+  } catch (error) {
+    console.error('Erro ao carregar feriados nacionais:', error);
+  }
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: 'dayGridMonth',
     locale: 'pt-br',
     selectable: true,
     events: '../../../carevent/all',
+
+    dayCellDidMount: function(info) {
+      const day = info.date.getDay(); // 0 = domingo, 6 = sábado
+      const dateStr = info.date.toISOString().split('T')[0];
+
+      if (day === 0 || day === 6) {
+        info.el.style.backgroundColor = '#f8d7da'; // Fim de semana
+      }
+
+      if (feriados.includes(dateStr)) {
+        info.el.style.backgroundColor = '#ffeeba'; // Feriado
+        info.el.style.fontWeight = 'bold';
+      }
+    },
 
     select: function (info) {
       form.reset();
@@ -130,40 +153,40 @@ document.addEventListener('DOMContentLoaded', function () {
     },
 
     eventClick: function (info) {
-    const event = info.event;
-    console.log('Evento clicado:', event.id);
+      const event = info.event;
+      console.log('Evento clicado:', event.id);
 
-    axios.get(`../../../carevent/getByIdAjax?id=${event.id}`)
-    .then(res => {
-      const car = res.data; 
-      document.getElementById('car_id').value = car.event.id;
-      document.getElementById('title').value = car.event.title;
-      document.getElementById('start').value = car.event.start.replace(' ', 'T');
-      document.getElementById('end').value = car.event.end.replace(' ', 'T');
-      document.getElementById('description').value = car.event.description;
-      document.getElementById('deleteCarBtn').style.display = 'inline-block';
-      carModal.show();
-    });
-}
+      axios.get(`../../../carevent/getByIdAjax?id=${event.id}`)
+        .then(res => {
+          const car = res.data;
+          document.getElementById('car_id').value = car.event.id;
+          document.getElementById('title').value = car.event.title;
+          document.getElementById('start').value = car.event.start.replace(' ', 'T');
+          document.getElementById('end').value = car.event.end.replace(' ', 'T');
+          document.getElementById('description').value = car.event.description;
+          document.getElementById('deleteCarBtn').style.display = 'inline-block';
+          carModal.show();
+        });
+    }
   });
 
   calendar.render();
 
   form.addEventListener('submit', function (e) {
-  e.preventDefault();
-  const formData = new FormData(form);
-  console.log('Formulário enviado');
+    e.preventDefault();
+    const formData = new FormData(form);
+    console.log('Formulário enviado');
 
-  axios.post('../../../carevent/store', formData)
-    .then(res => {
-      console.log('Resposta:', res);
-      if (res.data.success) {
-         carModal.hide();
-         calendar.refetchEvents();
-      } else {
-         alert(res.data.error || 'Erro ao salvar agendamento');
+    axios.post('../../../carevent/store', formData)
+      .then(res => {
+        console.log('Resposta:', res);
+        if (res.data.success) {
+          carModal.hide();
+          calendar.refetchEvents();
+        } else {
+          alert(res.data.error || 'Erro ao salvar agendamento');
         }
-    });
+      });
   });
 
   document.getElementById('deleteCarBtn').addEventListener('click', function () {
@@ -205,7 +228,6 @@ function fetchNotifications() {
         });
       }
 
-
       const divider = document.createElement('li');
       divider.innerHTML = `<hr class="dropdown-divider">`;
       notifList.appendChild(divider);
@@ -219,11 +241,9 @@ function fetchNotifications() {
     });
 }
 
-
-
-
-  setInterval(fetchNotifications, 10000);
-  fetchNotifications();
+setInterval(fetchNotifications, 10000);
+fetchNotifications();
 </script>
+
 </body>
 </html>

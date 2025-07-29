@@ -113,7 +113,7 @@
 <script>
   const loggedUserId = <?= $_SESSION['user']['id'] ?? 'null' ?>;
 
-  document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('DOMContentLoaded', async function () {
     const calendarEl = document.getElementById('calendar');
     const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
     const form = document.getElementById('eventForm');
@@ -130,11 +130,35 @@
       }
     });
 
+    const feriados = [];
+
+    try {
+      const response = await axios.get(`https://brasilapi.com.br/api/feriados/v1/${new Date().getFullYear()}`);
+      response.data.forEach(feriado => feriados.push(feriado.date)); // Ex: '2025-04-21'
+    } catch (error) {
+      console.error('Erro ao carregar feriados nacionais:', error);
+    }
+
     const calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: 'dayGridMonth',
       locale: 'pt-br',
       selectable: true,
       events: '../event/all',
+
+      dayCellDidMount: function(info) {
+        const day = info.date.getDay(); // 0 = domingo, 6 = sábado
+        const dateStr = info.date.toISOString().split('T')[0];
+
+        if (day === 0 || day === 6) {
+          info.el.style.backgroundColor = '#f8d7da'; // Fim de semana
+        }
+
+        if (feriados.includes(dateStr)) {
+          info.el.style.backgroundColor = '#ffeeba'; // Feriado nacional
+          info.el.style.fontWeight = 'bold';
+        }
+      },
+
       select: function (info) {
         form.reset();
         $('#participants').val(null).trigger('change');
@@ -144,47 +168,44 @@
         document.getElementById('deleteEventBtn').style.display = 'none';
         eventModal.show();
       },
+
       eventClick: function(info) {
-      const event = info.event;
-      axios.get(`../event/getByIdAjax?id=${event.id}`)
-      .then(res => {
-      const data = res.data;
-      console.log(data); 
+        const event = info.event;
+        axios.get(`../event/getByIdAjax?id=${event.id}`)
+        .then(res => {
+          const data = res.data;
+          if (!data.event) {
+            alert("Erro ao carregar dados do evento.");
+            return;
+          }
 
-      if (!data.event) {
-        alert("Erro ao carregar dados do evento.");
-        return;
+          document.getElementById('event_id').value = data.event.id;
+          document.getElementById('title').value = data.event.title;
+          document.getElementById('start').value = data.event.start.replace(' ', 'T');
+          document.getElementById('end').value = data.event.end.replace(' ', 'T');
+          document.getElementById('sala').value = data.event.sala;
+
+          const participantsSelect = $('#participants');
+          participantsSelect.val(null).trigger('change');
+
+          if (Array.isArray(data.participants)) {
+            data.participants.forEach(id => {
+              const option = new Option('Carregando...', id, true, true);
+              participantsSelect.append(option);
+            });
+          }
+
+          participantsSelect.trigger('change');
+
+          if (data.event.created_by == loggedUserId) {
+            document.getElementById('deleteEventBtn').style.display = 'inline-block';
+          } else {
+            document.getElementById('deleteEventBtn').style.display = 'none';
+          }
+
+          eventModal.show();
+        });
       }
-
-      document.getElementById('event_id').value = data.event.id;
-      document.getElementById('title').value = data.event.title;
-      document.getElementById('start').value = data.event.start.replace(' ', 'T');
-      document.getElementById('end').value = data.event.end.replace(' ', 'T');
-      document.getElementById('sala').value = data.event.sala;
-
-      const participantsSelect = $('#participants');
-      participantsSelect.val(null).trigger('change');
-
-      if (Array.isArray(data.participants)) {
-          data.participants.forEach(id => {
-            const option = new Option('Carregando...', id, true, true);
-            participantsSelect.append(option);
-          });
-      }
-
-      participantsSelect.trigger('change');
-
-      const loggedUserId = <?= $_SESSION['user']['id'] ?>;
-      if (data.event.created_by == loggedUserId) {
-        document.getElementById('deleteEventBtn').style.display = 'inline-block';
-      } else {
-        document.getElementById('deleteEventBtn').style.display = 'none';
-      }
-
-      eventModal.show();
-    });
-}
-
     });
 
     calendar.render();
@@ -203,12 +224,12 @@
           }
         })
         .catch(err => {
-        if (err.response?.data?.error) {
-          alert(err.response.data.error);
-        } else {
-          alert('Erro ao salvar evento');
-        }
-      });
+          if (err.response?.data?.error) {
+            alert(err.response.data.error);
+          } else {
+            alert('Erro ao salvar evento');
+          }
+        });
     });
 
     document.getElementById('deleteEventBtn').addEventListener('click', function () {
@@ -216,7 +237,6 @@
       if (confirm('Tem certeza que deseja excluir este evento?')) {
         axios.post('../event/delete', { id: eventId })
         .then(res => {
-          console.log('Resposta do backend:', res.data); 
           if (res.data.success) {
             alert('Evento excluído com sucesso!');
             eventModal.hide();
@@ -234,46 +254,44 @@
   });
 
   function fetchNotifications() {
-  axios.get('../notification/get')
-    .then(res => {
-      const notifList = document.getElementById('notif-list');
-      const notifCount = document.getElementById('notif-count');
-      notifList.innerHTML = '';
+    axios.get('../notification/get')
+      .then(res => {
+        const notifList = document.getElementById('notif-list');
+        const notifCount = document.getElementById('notif-count');
+        notifList.innerHTML = '';
 
-      if (!Array.isArray(res.data) || res.data.length === 0) {
-        notifList.innerHTML = '<li><span class="dropdown-item">Sem notificações</span></li>';
-        notifCount.textContent = '0';
-      } else {
-        notifCount.textContent = res.data.length;
+        if (!Array.isArray(res.data) || res.data.length === 0) {
+          notifList.innerHTML = '<li><span class="dropdown-item">Sem notificações</span></li>';
+          notifCount.textContent = '0';
+        } else {
+          notifCount.textContent = res.data.length;
 
-        res.data.forEach(n => {
-          const li = document.createElement('li');
-          li.innerHTML = `
-            <a class="dropdown-item" href="../notification/markAndRedirect?id=${n.id}&link=${encodeURIComponent('/agenda-salas' + (n.link || '/event/index'))}">
-              ${n.message}
-            </a>`;
-          notifList.appendChild(li);
-        });
-      }
+          res.data.forEach(n => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+              <a class="dropdown-item" href="../notification/markAndRedirect?id=${n.id}&link=${encodeURIComponent('/agenda-salas' + (n.link || '/event/index'))}">
+                ${n.message}
+              </a>`;
+            notifList.appendChild(li);
+          });
+        }
 
-      const divider = document.createElement('li');
-      divider.innerHTML = `<hr class="dropdown-divider">`;
-      notifList.appendChild(divider);
+        const divider = document.createElement('li');
+        divider.innerHTML = `<hr class="dropdown-divider">`;
+        notifList.appendChild(divider);
 
-      const viewAll = document.createElement('li');
-      viewAll.innerHTML = `<a class="dropdown-item text-center" href="/agenda-salas/notification/history">Ver todas as notificações</a>`;
-      notifList.appendChild(viewAll);
-    })
-    .catch(err => {
-      console.error("Erro ao buscar notificações:", err);
-    });
-}
-
-
-
+        const viewAll = document.createElement('li');
+        viewAll.innerHTML = `<a class="dropdown-item text-center" href="/agenda-salas/notification/history">Ver todas as notificações</a>`;
+        notifList.appendChild(viewAll);
+      })
+      .catch(err => {
+        console.error("Erro ao buscar notificações:", err);
+      });
+  }
 
   setInterval(fetchNotifications, 10000);
   fetchNotifications();
 </script>
+
 </body>
 </html>
