@@ -27,7 +27,7 @@ class CarEvent{
     }
 
     public function update($id, $data){
-        $stmt = $this->conn->prepare("UPDATE car_events SET title = ?, description = ?, start = ?, end = ?, WHERE id = ?");
+        $stmt = $this->conn->prepare("UPDATE car_events SET title = ?, description = ?, start = ?, end = ? WHERE id = ?");
         return $stmt->execute([$data['title'], $data['description'], $data['start'], $data['end'], $id]);
     }
 
