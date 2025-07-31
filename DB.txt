@@ -63,3 +63,51 @@ VALUES ('Ana Paula', 'ana.francisco@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItd
 
 INSERT INTO users (name, email, password)
 VALUES ('Claudia Lopes', 'claudia.lopes@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Michel Almeida', 'michel.almeida@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Caio Guimarães', 'caio.guimaraes@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Paulo Teodoro', 'paulo.teodoro@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Robson Santos', 'robson.santosa@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Rafael Silva', 'rafael.silva@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Melissa Pedroso', 'melissa.pedroso@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Dario Cristaldo', 'dario.cristaldo@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Darlei Santos', 'darlei.santos@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Debora Cassia', 'debora.cassia@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Marcio Rogério', 'rogerio@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Johnny Oliveira', 'j.oliveira@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Eder Pereira', 'eder.pereira@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Julio Cesar', 'julio.augusto@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Ericles Souza', 'e.souza@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Gabrielle Januario', 'gabrielle.souza@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
+
+INSERT INTO users (name, email, password)
+VALUES ('Dhaila Silva', 'd.silva@aerocris.ind.br', '$2y$10$y/9kLEKRyhdhwAsItdWKFu0U7nfLFf0oDGohNRzHKkN2kx6cSkvsi');
