@@ -42,11 +42,17 @@ class EventController {
         }
 
         if ($eventId) {
+            if (!$event->isOwner($eventId, $created_by)) {
+                echo json_encode(['success' => false, 'error' => 'Você não tem permissão para editar este evento.']);
+                return;
+            }
+        
             $event->update($eventId, $title, $start, $end, $sala);
             $event->removeParticipants($eventId);
         } else {
             $eventId = $event->create($title, $start, $end, $sala, $created_by);
         }
+        
 
         if ($eventId && count($participants) > 0) {
             foreach ($participants as $userId) {
@@ -121,7 +127,6 @@ class EventController {
     public function delete() {
         header('Content-Type: application/json');
     
-        // Lê o corpo JSON da requisição
         $data = json_decode(file_get_contents("php://input"), true);
         $eventId = $data['id'] ?? null;
     

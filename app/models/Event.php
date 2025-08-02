@@ -116,4 +116,13 @@ class Event {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['total'] > 0;
     }
+
+    public function isOwner($eventId, $userId) {
+        $stmt = $this->conn->prepare("SELECT created_by FROM events WHERE id = ?");
+        $stmt->execute([$eventId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        return $result && $result['created_by'] == $userId;
+    }
+    
 }
