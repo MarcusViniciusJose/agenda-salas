@@ -17,13 +17,13 @@ class Event {
         foreach ($events as &$event) {
             switch ($event['sala']) {
                 case 'reuniao':
-                    $event['color'] = '#007bff'; // azul
+                    $event['color'] = '#007bff'; 
                     break;
                 case 'treinamento':
-                    $event['color'] = '#28a745'; // verde
+                    $event['color'] = '#28a745'; 
                     break;
                 default:
-                    $event['color'] = '#6c757d'; // cinza
+                    $event['color'] = '#6c757d'; 
                     break;
             }
         }
@@ -55,7 +55,12 @@ class Event {
     }
 
     public function getById($id){
-        $stmt = $this->conn->prepare("SELECT * FROM events WHERE id = ?");
+        $stmt = $this->conn->prepare("
+            SELECT e.*, u.name AS creator_name, u.email AS creator_email
+            FROM events e
+            INNER JOIN users u ON e.created_by = u.id
+            WHERE e.id = ?
+        ");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
@@ -90,11 +95,9 @@ class Event {
     }
 
     public function delete($id) {
-        // Remove os participantes do evento primeiro
         $stmtParticipants = $this->conn->prepare("DELETE FROM events_participants WHERE event_id = ?");
         $stmtParticipants->execute([$id]);
 
-        // Agora pode excluir o evento
         $stmt = $this->conn->prepare("DELETE FROM events WHERE id = ?");
         return $stmt->execute([$id]);
 

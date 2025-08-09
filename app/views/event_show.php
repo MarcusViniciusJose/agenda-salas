@@ -17,11 +17,12 @@ $participants = $participants ?? [];
   <hr>
 
   <?php if ($eventData): ?>
+    <p><strong>Criado por:</strong> <?= htmlspecialchars($eventData['creator_name']) ?> (<?= htmlspecialchars($eventData['creator_email']) ?>)</p>
     <p><strong>Título:</strong> <?= htmlspecialchars($eventData['title']) ?></p>
     <p><strong>Início:</strong> <?= date('d/m/Y H:i', strtotime($eventData['start'])) ?></p>
     <p><strong>Fim:</strong> <?= date('d/m/Y H:i', strtotime($eventData['end'])) ?></p>
     <p><strong>Sala:</strong> <?= $eventData['sala'] == 'reuniao' ? 'Sala de Reunião' : 'Sala de Treinamento' ?></p>
-
+    
     <h4 class="mt-4">👥 Participantes</h4>
     <ul class="list-group">
       <?php if (!empty($participants)): ?>

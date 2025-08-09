@@ -116,11 +116,11 @@ class EventController {
         $event = new Event();
         $eventData = $event->getById($_GET['id']);
         $participants = $event->getParticipants($_GET['id']);
-        $participantsIds = array_column($participants, 'id');
+        $participantsIds = array_column($participants, 'id', 'name');
 
         echo json_encode([
             'event' => $eventData,
-            'participants' => $participantsIds
+            'participants' => $participants
         ]);
     }
 

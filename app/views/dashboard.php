@@ -189,13 +189,17 @@
           participantsSelect.val(null).trigger('change');
 
           if (Array.isArray(data.participants)) {
-            data.participants.forEach(id => {
-              const option = new Option('Carregando...', id, true, true);
-              participantsSelect.append(option);
-            });
-          }
+          data.participants.forEach(user => {
+            const label = user.name + (user.email ? ` (${user.email})` : '');
+            if ($('#participants option[value="' + user.id + '"]').length === 0) {
+              const option = new Option(label, user.id, true, true);
+              $('#participants').append(option);
+            }
+          });
+        }
 
-          participantsSelect.trigger('change');
+        $('#participants').trigger('change');
+
 
           if (data.event.created_by == loggedUserId) {
             document.getElementById('deleteEventBtn').style.display = 'inline-block';
