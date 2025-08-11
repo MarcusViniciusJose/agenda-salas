@@ -19,18 +19,14 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
   <div class="container-fluid">
-    <!-- Marca/logo -->
     <a class="navbar-brand fw-bold" href="#">Agendamento de Salas</a>
 
-    <!-- Botão do menu para dispositivos móveis -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Conteúdo da navbar -->
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <!-- Links do menu à esquerda -->
         <li class="nav-item">
           <a class="nav-link" href="/agenda-salas/event/index">Agenda de Salas</a>
         </li>
@@ -38,10 +34,7 @@
           <a class="nav-link" href="/agenda-salas/app/views/cars">Agenda do Carro</a>
         </li>
       </ul>
-
-      <!-- Notificações e botão de logout à direita -->
       <ul class="navbar-nav ms-auto">
-        <!-- Notificações -->
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle position-relative" href="#" role="button" data-bs-toggle="dropdown" id="notif-icon">
             🔔
@@ -52,7 +45,6 @@
           </ul>
         </li>
 
-        <!-- Logout -->
         <li class="nav-item">
           <a class="nav-link text-danger fw-semibold" href="../auth/logout">Sair</a>
         </li>
@@ -66,7 +58,6 @@
   <div id="calendar"></div>
 </div>
 
-<!-- Modal de Criação -->
 <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <form id="eventForm" class="modal-content p-3 rounded-3 shadow-sm border-0">
@@ -98,6 +89,15 @@
         <div class="mb-3">
           <label for="participants" class="form-label">Participantes</label>
           <select class="form-select" id="participants" name="participants[]" multiple="multiple" style="width: 100%"></select>
+        </div>
+        <div class="mb-3">
+          <label for="repeat" class="form-label">Repetir</label>
+          <select class="form-select" id="repeat" name="repeat">
+            <option value="none">Não repetir</option>
+            <option value="daily">Diariamente</option>
+            <option value="weekly">Semanalmente</option>
+            <option value="monthly">Mensalmente</option>
+          </select>
         </div>
       </div>
       <div class="modal-footer">
@@ -134,7 +134,7 @@
 
     try {
       const response = await axios.get(`https://brasilapi.com.br/api/feriados/v1/${new Date().getFullYear()}`);
-      response.data.forEach(feriado => feriados.push(feriado.date)); // Ex: '2025-04-21'
+      response.data.forEach(feriado => feriados.push(feriado.date)); 
     } catch (error) {
       console.error('Erro ao carregar feriados nacionais:', error);
     }
@@ -146,15 +146,15 @@
       events: '../event/all',
 
       dayCellDidMount: function(info) {
-        const day = info.date.getDay(); // 0 = domingo, 6 = sábado
+        const day = info.date.getDay(); 
         const dateStr = info.date.toISOString().split('T')[0];
 
         if (day === 0 || day === 6) {
-          info.el.style.backgroundColor = '#f8d7da'; // Fim de semana
+          info.el.style.backgroundColor = '#f8d7da';
         }
 
         if (feriados.includes(dateStr)) {
-          info.el.style.backgroundColor = '#ffeeba'; // Feriado nacional
+          info.el.style.backgroundColor = '#ffeeba'; 
           info.el.style.fontWeight = 'bold';
         }
       },
@@ -189,14 +189,17 @@
           participantsSelect.val(null).trigger('change');
 
           if (Array.isArray(data.participants)) {
-          data.participants.forEach(user => {
-            const label = user.name + (user.email ? ` (${user.email})` : '');
-            if ($('#participants option[value="' + user.id + '"]').length === 0) {
+            $('#participants').empty();
+
+            data.participants.forEach(user => {
+              const label = user.name + (user.email ? ` (${user.email})` : '');
               const option = new Option(label, user.id, true, true);
               $('#participants').append(option);
-            }
-          });
-        }
+            });
+
+            $('#participants').trigger('change');
+          }
+
 
         $('#participants').trigger('change');
 

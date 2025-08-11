@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agenda do Carro</title>
 
-  <!-- Bootstrap, Select2, FullCalendar -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -22,18 +21,14 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
   <div class="container-fluid">
-    <!-- Marca/logo -->
     <a class="navbar-brand fw-bold" href="#">Agendamento do Carro</a>
 
-    <!-- Botão do menu para dispositivos móveis -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Conteúdo da navbar -->
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <!-- Links do menu à esquerda -->
         <li class="nav-item">
           <a class="nav-link" href="/agenda-salas/event/index">Agenda de Salas</a>
         </li>
@@ -42,9 +37,7 @@
         </li>
       </ul>
 
-      <!-- Notificações e botão de logout à direita -->
       <ul class="navbar-nav ms-auto">
-        <!-- Notificações -->
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle position-relative" href="#" role="button" data-bs-toggle="dropdown" id="notif-icon">
             🔔
@@ -55,7 +48,6 @@
           </ul>
         </li>
 
-        <!-- Logout -->
         <li class="nav-item">
           <a class="nav-link text-danger fw-semibold" href="../../../auth/logout">Sair</a>
         </li>
@@ -69,7 +61,6 @@
   <div id="calendar"></div>
 </div>
 
-<!-- Modal Agendamento Carro -->
 <div class="modal fade" id="carModal" tabindex="-1" aria-labelledby="carModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <form id="carForm" class="modal-content p-3 rounded-3 shadow-sm border-0">
@@ -118,7 +109,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   try {
     const response = await axios.get(`https://brasilapi.com.br/api/feriados/v1/${new Date().getFullYear()}`);
-    response.data.forEach(feriado => feriados.push(feriado.date)); // Ex: '2025-09-07'
+    response.data.forEach(feriado => feriados.push(feriado.date)); 
   } catch (error) {
     console.error('Erro ao carregar feriados nacionais:', error);
   }
@@ -130,15 +121,15 @@ document.addEventListener('DOMContentLoaded', async function () {
     events: '../../../carevent/all',
 
     dayCellDidMount: function(info) {
-      const day = info.date.getDay(); // 0 = domingo, 6 = sábado
+      const day = info.date.getDay(); 
       const dateStr = info.date.toISOString().split('T')[0];
 
       if (day === 0 || day === 6) {
-        info.el.style.backgroundColor = '#f8d7da'; // Fim de semana
+        info.el.style.backgroundColor = '#f8d7da'; 
       }
 
       if (feriados.includes(dateStr)) {
-        info.el.style.backgroundColor = '#ffeeba'; // Feriado
+        info.el.style.backgroundColor = '#ffeeba'; 
         info.el.style.fontWeight = 'bold';
       }
     },

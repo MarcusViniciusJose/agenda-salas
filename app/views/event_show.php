@@ -1,5 +1,4 @@
 <?php
-// Garante que as variáveis estão definidas para evitar warnings
 $eventData = $eventData ?? null;
 $participants = $participants ?? [];
 ?>

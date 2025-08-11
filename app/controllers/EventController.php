@@ -15,32 +15,32 @@ class EventController {
     }
 
     public function store() {
-
         $event = new Event();
         $userModel = new User();
         $notificationModel = new Notification();
-
+    
         $title = $_POST['title'];
         $start = $_POST['start'];
         $end = $_POST['end'];
         $sala = $_POST['sala'];
+        $repeat = $_POST['repeat'] ?? 'none'; 
         $created_by = $_SESSION['user']['id'] ?? null;
         $participants = $_POST['participants'] ?? [];
-
+    
         $titleSafe = htmlspecialchars($title);
         $startSafe = htmlspecialchars(date('d/m/Y H:i', strtotime($start)));
-
+    
         if (!$created_by) {
             echo json_encode(['success' => false, 'error' => 'Usuário não autenticado.']);
             return;
         }
-
+    
         $eventId = $_POST['event_id'] ?? null;
         if (!$eventId && $event->hasConflict($start, $end, $sala)) {
             echo json_encode(['success' => false, 'error' => 'Conflito de agendamento! Já existe um evento nessa sala nesse horário.']);
             return;
         }
-
+    
         if ($eventId) {
             if (!$event->isOwner($eventId, $created_by)) {
                 echo json_encode(['success' => false, 'error' => 'Você não tem permissão para editar este evento.']);
@@ -51,13 +51,16 @@ class EventController {
             $event->removeParticipants($eventId);
         } else {
             $eventId = $event->create($title, $start, $end, $sala, $created_by);
+    
+            if ($repeat !== 'none') {
+                $this->createRecurringEvents($repeat, $title, $start, $end, $sala, $created_by, $event, $participants, $notificationModel);
+            }
         }
         
-
         if ($eventId && count($participants) > 0) {
             foreach ($participants as $userId) {
                 $event->addParticipants($eventId, $userId);
-
+    
                 $notificationModel->create(
                     $userId,
                     "Você foi convidado para o evento <strong>$titleSafe</strong> no dia <strong>$startSafe</strong>.",
@@ -66,8 +69,7 @@ class EventController {
                 );
             }
         }
-
-
+    
         echo json_encode([
             'success' => true,
             'event' => [
@@ -78,10 +80,50 @@ class EventController {
                 'sala' => $sala
             ]
         ]);
-
+    
         exit;
-        
     }
+    
+   
+    private function createRecurringEvents($repeat, $title, $start, $end, $sala, $created_by, $event, $participants, $notificationModel) {
+        $interval = match($repeat) {
+            'daily' => '+1 day',
+            'weekly' => '+1 week',
+            'monthly' => '+1 month',
+            default => null
+        };
+    
+        if (!$interval) return;
+    
+        $titleSafe = htmlspecialchars($title);
+    
+        for ($i = 1; $i <= 10; $i++) {
+            $newStart = date('Y-m-d H:i:s', strtotime($interval, strtotime($start)));
+            $newEnd = date('Y-m-d H:i:s', strtotime($interval, strtotime($end)));
+    
+            $start = $newStart;
+            $end = $newEnd;
+    
+            if ($event->hasConflict($start, $end, $sala)) {
+                continue; 
+            }
+    
+            $newEventId = $event->create($title, $start, $end, $sala, $created_by);
+    
+            foreach ($participants as $userId) {
+                $event->addParticipants($newEventId, $userId);
+    
+                $notificationModel->create(
+                    $userId,
+                    "Você foi convidado para o evento <strong>$titleSafe</strong> no dia <strong>" .
+                    htmlspecialchars(date('d/m/Y H:i', strtotime($start))) . "</strong>.",
+                    "/public/index.php?url=event/show&id=$newEventId",
+                    $newEventId
+                );
+            }
+        }
+    }
+    
 
     public function show() {
         $eventId = $_GET['id'] ?? null;
@@ -97,13 +139,11 @@ class EventController {
         $eventData = $eventModel->getById($eventId);
         $participants = $eventModel->getParticipants($eventId);
     
-        // Verifica se encontrou o evento
         if (!$eventData) {
             echo "Evento não encontrado no banco de dados.";
             return;
         }
     
-        // Inclui a view com as variáveis corretamente definidas
         require '../app/views/event_show.php';
     }
 
