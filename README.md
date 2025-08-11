@@ -24,7 +24,7 @@ O projeto nasceu da necessidade de substituir processos manuais e pouco prático
 - **PHP** → Back-end com estrutura **MVC** para melhor organização do código.
 - **MySQL** → Banco de dados relacional para armazenar eventos, usuários e recursos.
 - **JavaScript** → Interatividade e validações no front-end.
-- **FullCalendar** -> Utilizado a biblioteca Fullcalendar para facilitar o desenvolvimento.
+- **FullCalendar** → Utilizado a biblioteca Fullcalendar para facilitar o desenvolvimento.
 - **Bootstrap** → Layout responsivo e moderno.
 - **HTML5 & CSS3** → Estrutura e estilização das páginas.
 - **date-holidays** → Biblioteca para gerenciamento automático de feriados.
