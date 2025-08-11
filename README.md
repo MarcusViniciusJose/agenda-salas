@@ -12,9 +12,7 @@ O projeto nasceu da necessidade de substituir processos manuais e pouco prático
 - **Agendamento de Salas e Veículos** com data, hora e descrição.
 - **Controle de Participantes** (apenas o criador pode excluir).
 - **Visualização de eventos por dia/mês**.
-- **Controle de Acesso** por níveis de usuário:
-  - Usuário comum → Pode criar e visualizar seus agendamentos.
-  - Administrador → Gerencia todos os agendamentos.
+- **Repetição de eventos** Usuário podendo escolher se o evento irá se repetir mais vezes.
 - **Validação de Conflitos** para evitar reservas duplicadas.
 - **Integração com feriados** (via *date-holidays* no back-end).
 - **Design Responsivo** (uso de Bootstrap).
@@ -26,6 +24,7 @@ O projeto nasceu da necessidade de substituir processos manuais e pouco prático
 - **PHP** → Back-end com estrutura **MVC** para melhor organização do código.
 - **MySQL** → Banco de dados relacional para armazenar eventos, usuários e recursos.
 - **JavaScript** → Interatividade e validações no front-end.
+- **FullCalendar** -> Utilizado a biblioteca Fullcalendar para facilitar o desenvolvimento.
 - **Bootstrap** → Layout responsivo e moderno.
 - **HTML5 & CSS3** → Estrutura e estilização das páginas.
 - **date-holidays** → Biblioteca para gerenciamento automático de feriados.
