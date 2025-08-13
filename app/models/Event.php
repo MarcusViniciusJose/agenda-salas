@@ -105,6 +105,18 @@ class Event {
        
     }
 
+    public function updateDate($id, $start, $end) {
+        $stmt = $this->conn->prepare("UPDATE events 
+            SET start = :start, end = :end 
+            WHERE id = :id");
+        return $stmt->execute([
+            ':start' => $start,
+            ':end' => $end,
+            ':id' => $id
+        ]);
+    }
+    
+
     public function hasConflict($start, $end, $sala){
         $stmt = $this->conn->prepare("SELECT COUNT(*) as total 
             FROM events 

@@ -156,13 +156,47 @@ class EventController {
         $event = new Event();
         $eventData = $event->getById($_GET['id']);
         $participants = $event->getParticipants($_GET['id']);
-        $participantsIds = array_column($participants, 'id', 'name');
 
         echo json_encode([
             'event' => $eventData,
             'participants' => $participants
         ]);
     }
+
+    public function updateDate(){
+    header('Content-Type: application/json');
+    
+    $input = json_decode(file_get_contents("php://input"), true);
+    
+    $id = $input['id'] ?? null;
+    $start = $input['start'] ?? null;
+    $end = $input['end'] ?? null;
+
+    if (!$id || !$start) {
+        echo json_encode(['success' => false, 'error' => 'Dados inválidos']);
+        return;
+    }
+
+    $diaSemana = date('w', strtotime($start)); 
+    if ($diaSemana == 0 || $diaSemana == 6) {
+        echo json_encode(['success' => false, 'error' => 'Não é permitido mover eventos para finais de semana.']);
+        return;
+    }
+
+    try {
+        $event = new Event();
+        $result = $event->updateDate($id, $start, $end);
+        
+        if ($result) {
+            echo json_encode(['success' => true]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Erro ao atualizar']);
+        }
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+}
+
 
     public function delete() {
         header('Content-Type: application/json');

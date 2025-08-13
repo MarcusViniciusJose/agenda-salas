@@ -144,6 +144,36 @@
       locale: 'pt-br',
       selectable: true,
       events: '../event/all',
+      editable: true, 
+
+      eventDrop: function(info) {
+      const diaSemana = info.event.start.getDay(); 
+      if (diaSemana === 0 || diaSemana === 6) {
+        alert("Não é permitido mover eventos para finais de semana.");
+        info.revert();
+        return;
+      }
+
+      const startDate = info.event.start.toISOString().slice(0, 19).replace('T', ' ');
+      const endDate = info.event.end ? info.event.end.toISOString().slice(0, 19).replace('T', ' ') : startDate;
+
+      axios.post('../event/updateDate', {
+        id: info.event.id,
+        start: startDate,
+        end: endDate
+      })
+      .then(res => {
+        if (!res.data.success) {
+          alert(res.data.error || "Erro ao atualizar evento.");
+          info.revert();
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Erro ao atualizar evento.");
+        info.revert();
+      });
+    },
 
       dayCellDidMount: function(info) {
         const day = info.date.getDay(); 
