@@ -154,18 +154,43 @@
         return;
       }
 
-      const startDate = info.event.start.toISOString().slice(0, 19).replace('T', ' ');
-      const endDate = info.event.end ? info.event.end.toISOString().slice(0, 19).replace('T', ' ') : startDate;
+      axios.get(`../event/getByIdAjax?id=${info.event.id}`)
+      .then(response => {
+        const originalEvent = response.data.event;
+        
+        const originalStart = new Date(originalEvent.start.replace(' ', 'T'));
+        const originalEnd = new Date(originalEvent.end.replace(' ', 'T'));
+        const durationMs = originalEnd.getTime() - originalStart.getTime(); 
+        
+        const originalStartTime = originalStart.toTimeString().slice(0, 8); 
+        const newStartDay = info.event.start.toISOString().slice(0, 10); 
+        const newStart = newStartDay + ' ' + originalStartTime;
+        
+        const newStartDate = new Date(newStart.replace(' ', 'T'));
+        const newEndDate = new Date(newStartDate.getTime() + durationMs);
+        
+        const newEnd = newEndDate.getFullYear() + '-' + 
+                      String(newEndDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                      String(newEndDate.getDate()).padStart(2, '0') + ' ' + 
+                      newEndDate.toTimeString().slice(0, 8);
 
-      axios.post('../event/updateDate', {
-        id: info.event.id,
-        start: startDate,
-        end: endDate
+        console.log('Duração original:', durationMs / (1000 * 60 * 60), 'horas');
+        console.log('Novo start:', newStart);
+        console.log('Novo end:', newEnd);
+
+        
+        return axios.post('../event/updateDate', {
+          id: info.event.id,
+          start: newStart,
+          end: newEnd
+        });
       })
       .then(res => {
         if (!res.data.success) {
           alert(res.data.error || "Erro ao atualizar evento.");
           info.revert();
+        } else {
+          calendar.refetchEvents();
         }
       })
       .catch(err => {

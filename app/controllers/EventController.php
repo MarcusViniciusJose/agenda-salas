@@ -172,7 +172,7 @@ class EventController {
     $start = $input['start'] ?? null;
     $end = $input['end'] ?? null;
 
-    if (!$id || !$start) {
+    if (!$id || !$start || !$end) {
         echo json_encode(['success' => false, 'error' => 'Dados inválidos']);
         return;
     }
@@ -185,6 +185,20 @@ class EventController {
 
     try {
         $event = new Event();
+        
+        $currentEvent = $event->getById($id);
+        if (!$currentEvent) {
+            echo json_encode(['success' => false, 'error' => 'Evento não encontrado.']);
+            return;
+        }
+        
+        $sala = $currentEvent['sala'];
+
+        if ($event->hasConflict($start, $end, $sala, $id)) { 
+            echo json_encode(['success' => false, 'error' => 'Conflito de agendamento! Já existe um evento nesta sala nesse horário.']);
+            return;
+        }
+
         $result = $event->updateDate($id, $start, $end);
         
         if ($result) {
@@ -196,6 +210,7 @@ class EventController {
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
 }
+
 
 
     public function delete() {
